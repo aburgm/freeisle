@@ -2,21 +2,35 @@
 
 #include <cassert>
 #include <cstdint>
+#include <memory>
 
 namespace freeisle {
 
+/**
+ * Represents a 2-D grid of fixed width and height of some type T.
+ */
 template <typename T> class Grid {
 public:
+  /**
+   * Create a new grid with the given dimensions. All elements are
+   * default-initialized.
+   */
   Grid(uint32_t width, uint32_t height)
-      : width(width), height(height), grid(new T[width * height]);
+      : width(width), height(height), grid(new T[width * height]()) {}
 
-  T &operator(uint32_t x, uint32_t y) {
+  /**
+   * Access the element at the given location.
+   */
+  T &operator()(uint32_t x, uint32_t y) {
     assert(x < width);
     assert(y < height);
     return grid[y * width + x];
   }
 
-  const T &operator(uint32_t x, uint32_t y) const {
+  /**
+   * Access the element at the given location.
+   */
+  const T &operator()(uint32_t x, uint32_t y) const {
     assert(x < width);
     assert(y < height);
     return grid[y * width + x];
