@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace freeisle {
+namespace freeisle::core {
 
 /**
  * Represents a 2-D grid of fixed width and height of some type T.
@@ -42,4 +42,4 @@ private:
   std::unique_ptr<T[]> grid;
 };
 
-} // namespace freeisle
+} // namespace freeisle::core

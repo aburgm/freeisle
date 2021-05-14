@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cstdint>
 
-namespace freeisle {
+namespace freeisle::core {
 
 /**
  * A helper class to store a bitmask of values of some type T,
@@ -95,4 +95,4 @@ private:
   uint32_t val;
 };
 
-} // namespace freeisle
+} // namespace freeisle::core
