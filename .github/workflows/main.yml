@@ -16,10 +16,29 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: sudo apt-get install libgtest-dev
+        run: sudo apt-get install libgtest-dev gcovr
 
       - name: Meson Build
         uses: BSFishy/meson-build@v1.0.3
         with:
           action: test
           setup-options: -Db_coverage=true
+
+      - name: Create Coverage Report
+        id: create_coverage_report
+        run: |
+          ninja -C build coverage-text
+          report="$(cat build/meson-logs/coverage.txt)"
+          # Replace newlines by '\n' to capture it in output and include in JSON in next step
+          report="${report//$'\n'/'\n'}"
+          echo "::set-output name=line_coverage::$(sed -n 's/TOTAL\s\+\S\+\s\+\S\+\s\+\(\S\+\)%/\1/p' build/meson-logs/coverage.txt)"
+          echo "::set-output name=report::$report"
+
+      - uses: LouisBrunner/checks-action@v1.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Code coverage
+          conclusion: success
+          output: |
+            {"summary": "Lines: ${{ steps.create_coverage_report.outputs.line_coverage }}%",
+             "text_description": "```${{ steps.create_coverage_report.outputs.report }}```" }
