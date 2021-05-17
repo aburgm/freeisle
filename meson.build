@@ -1,3 +1,3 @@
-project('freeisle', 'cpp')
+project('freeisle', 'c', 'cpp')
 
 subdir('src')
