@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: sudo apt-get install libgtest-dev gcovr
+        run: sudo apt-get install libgtest-dev libfmt-dev gcovr
 
       - name: Meson Build
         uses: BSFishy/meson-build@v1.0.3
