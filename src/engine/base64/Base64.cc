@@ -52,7 +52,7 @@ namespace freeisle::base64 {
 uint64_t encode(const uint8_t *data, uint64_t len, uint8_t *result) {
   uint8_t *res = result;
   while (len >= 3) {
-    const uint8_t b1 = (data[0] & 0b1111100) >> 2;
+    const uint8_t b1 = (data[0] & 0b11111100) >> 2;
     const uint8_t b2 =
         ((data[0] & 0b00000011) << 4) | ((data[1] & 0b11110000) >> 4);
     const uint8_t b3 =

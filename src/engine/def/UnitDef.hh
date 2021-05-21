@@ -1,8 +1,8 @@
 #pragma once
 
-#include "defs/ContainerDef.hh"
-#include "defs/Resupply.hh"
-#include "defs/WeaponDef.hh"
+#include "def/ContainerDef.hh"
+#include "def/Resupply.hh"
+#include "def/WeaponDef.hh"
 
 #include "core/Bitmask.hh"
 
@@ -67,7 +67,7 @@ struct UnitDef {
   /**
    * Capabilities that this unit has.
    */
-  Bitmask<Cap> caps;
+  core::Bitmask<Cap> caps;
 
   /**
    * General armor class, i.e. protection against damage, of the unit.
@@ -97,7 +97,8 @@ struct UnitDef {
    * Default movement cost is 100, but can be lower to move faster over the
    * given terrain, or can be higher to move slower.
    */
-  uint32_t movement_cost[TerrainType::Num];
+  uint32_t movement_cost[static_cast<uint32_t>(BaseTerrainType::Num) +
+                         static_cast<uint32_t>(OverlayTerrainType::Num)];
 
   /**
    * Extra protection of the unit on each terrain. Standard protection is 100.
@@ -108,14 +109,15 @@ struct UnitDef {
    * is taken, except when the unit's level doesn't apply to the overlay
    * terrain.
    */
-  uint32_t protection[TerrainType::Num];
+  uint32_t protection[static_cast<uint32_t>(BaseTerrainType::Num) +
+                      static_cast<uint32_t>(OverlayTerrainType::Num)];
 
   /**
    * Resistance and vulnerability of the unit to each damage type. Default
    * resistance is 100, with values less than than indicating a vulnerability
    * to the type of damage, and values greater than 100 indicate resistance.
    */
-  uint32_t resistance[DamageType::Num];
+  uint32_t resistance[static_cast<uint32_t>(DamageType::Num)];
 
   /**
    * Supplies that this unit can supply other units with.

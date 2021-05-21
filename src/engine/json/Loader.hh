@@ -256,13 +256,14 @@ private:
 void resolve_includes(Context &ctx, Json::Value &value);
 
 /**
- * Create a new loading context, not related to any files. It will not be
- * able to resolve any include references.
+ * Create a new loading context with the given data. If path is not null,
+ * include references are resolved relative to it, otherwise the context will
+ * not be able to resolve any include references.
  *
  * Use load_object subsequently to use the context to load an object.
  */
 std::pair<Context, Json::Value>
-make_root_source_context(std::vector<uint8_t> data);
+make_root_source_context(std::vector<uint8_t> data, const char *path);
 
 /**
  * Create a new loading context from a given root path on the filesystem.
@@ -280,7 +281,7 @@ template <typename THandler>
 std::map<std::string, IncludeInfo> load_root_object(std::vector<uint8_t> data,
                                                     THandler &handler) {
   std::pair<Context, Json::Value> pair =
-      make_root_source_context(std::move(data));
+      make_root_source_context(std::move(data), nullptr);
   resolve_includes(pair.first, pair.second);
   handler.load(pair.first, pair.second);
   return std::move(pair.first.include_map);

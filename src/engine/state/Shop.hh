@@ -1,6 +1,10 @@
 #pragma once
 
-#include "state/Ptr.hh"
+#include "def/ShopDef.hh"
+#include "state/Container.hh"
+#include "state/Player.hh"
+
+#include "core/Ptr.hh"
 
 namespace freeisle::state {
 
@@ -18,13 +22,13 @@ struct Shop {
   /**
    * Definition of this shop.
    */
-  const ShopDef *def;
+  const def::ShopDef *def;
 
   /**
    * Player who owns the shop. The shop is generating income for this player,
    * and this player can produce units in the shop.
    */
-  Ptr<Player> owner;
+  core::Ptr<Player> owner;
 
   /**
    * State on which units are contained in the shop.

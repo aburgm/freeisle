@@ -1,14 +1,24 @@
 #pragma once
 
+#include "state/Player.hh"
+#include "state/Shop.hh"
+#include "state/Team.hh"
+#include "state/Unit.hh"
+
+#include "core/Ptr.hh"
+
 namespace freeisle::state {
 
 /**
  * Represents the entire game state.
  */
 struct State {
+  State() = default;
+
   // TODO(armin): implement deep copy for AI
   State(const State &) = delete;
-  State(State &&) = delete;
+  State(State &&) = default; // I think this one works out of the box; pointers
+                             // will remain valid
 
   State &operator=(const State &) = delete;
   State &operator=(State &&) = delete;
@@ -16,7 +26,7 @@ struct State {
   /**
    * Scenario that is being played.
    */
-  const Scenario *scenario;
+  const def::Scenario *scenario;
 
   /**
    * Teams participating.
@@ -46,7 +56,7 @@ struct State {
   /**
    * Player whose turn it currently is.
    */
-  Ptr<Player> player_at_turn;
+  core::Ptr<Player> player_at_turn;
 };
 
 } // namespace freeisle::state

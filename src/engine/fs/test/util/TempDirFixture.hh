@@ -18,15 +18,15 @@ public:
     char cwd[256];
     ASSERT_NE(::getcwd(cwd, sizeof(cwd)), nullptr);
 
-    // TODO(armin): open the origDirectory and use fchdir on return.
-    origDirectory = cwd;
+    // TODO(armin): open the orig_directory and use fchdir on return.
+    orig_directory = cwd;
     directory = templ;
 
     ASSERT_EQ(::chdir(templ), 0);
   }
 
   virtual void TearDown() override {
-    ASSERT_EQ(::chdir(origDirectory.c_str()), 0);
+    ASSERT_EQ(::chdir(orig_directory.c_str()), 0);
     delete_directory(directory.c_str(), AT_FDCWD);
   }
 
@@ -54,7 +54,7 @@ public:
     ASSERT_EQ(::unlinkat(dirfd, path, AT_REMOVEDIR), 0);
   }
 
-  std::string origDirectory;
+  std::string orig_directory;
   std::string directory;
 };
 

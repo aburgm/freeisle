@@ -1,6 +1,19 @@
 #pragma once
 
+#include "state/Team.hh"
+
+#include "def/Goal.hh"
+
+#include "core/Bitmask.hh"
+#include "core/Color.hh"
+#include "core/Grid.hh"
+#include "core/Ptr.hh"
+
+#include <list>
+
 namespace freeisle::state {
+
+struct Unit;
 
 /**
  * Represents a player taking part in the game.
@@ -37,17 +50,17 @@ struct Player {
   /**
    * Color of the player.
    */
-  Color color;
+  core::color::Rgb8 color;
 
   /**
    * Team that this player is in, or null if they are not in any team.
    */
-  Ptr<Team> team;
+  core::Ptr<Team> team;
 
   /**
    * fog of war (fow) state for this player.
    */
-  Grid<Fow> fow;
+  core::Grid<Fow> fow;
 
   /**
    * Current wealth of the player.
@@ -58,18 +71,18 @@ struct Player {
    * Unit designated as the captain for this player, or null if there is no
    * such unit. The unit must have the isCaptain flag set.
    */
-  Ptr<Unit> captain;
+  core::Ptr<Unit> captain;
 
   /**
    * List of all units of this player.
    */
-  std::list<Ptr<Unit>> units;
+  std::list<core::Ptr<Unit>> units;
 
   /**
    * Lose conditions for this player. If any of them is fulfilled, the player
    * loses the game immediately and is eliminated.
    */
-  Bitmask<Goal> loseConditions;
+  core::Bitmask<def::Goal> loseConditions;
 
   /**
    * Whether this player has been eliminated or is still actively playing.

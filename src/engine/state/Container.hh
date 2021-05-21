@@ -1,8 +1,10 @@
 #pragma once
 
-#include "defs/ContainerDef.hh"
+#include "def/ContainerDef.hh"
 
-#include "state/Ptr.hh"
+#include "core/Ptr.hh"
+
+#include <list>
 
 namespace freeisle::state {
 
@@ -25,12 +27,12 @@ struct Container {
    * Container definition specifying what is allowed to
    * be contained in this container.
    */
-  const ContainerDef *def;
+  const def::ContainerDef *def;
 
   /**
    * The units currently being contained.
    */
-  std::list<Ptr<Unit>> units;
+  std::list<core::Ptr<Unit>> units;
 };
 
 } // namespace freeisle::state
