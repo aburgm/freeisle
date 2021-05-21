@@ -16,7 +16,7 @@
 
 namespace freeisle::fs::path {
 
-bool is_absolute(const std::string &path) {
+bool is_absolute(const std::string_view &path) {
   return !path.empty() && path[0] == '/';
 }
 
@@ -61,7 +61,7 @@ std::pair<std::string, std::string> split(const std::string &path) {
   }
 }
 
-std::string resolve(const std::string &path) {
+std::string resolve(const std::string_view &path) {
   std::vector<std::string> parts;
   std::string::size_type prev = 0;
   while (prev != std::string::npos) {

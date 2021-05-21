@@ -139,6 +139,9 @@ public:
   bool operator==(const typename Collection<T>::iterator iter) const {
     return *this == NullableRef<T>(iter);
   }
+  bool operator==(const typename Collection<T>::const_iterator iter) const {
+    return ref_ && &**ref_ == &iter->second;
+  }
 
   NullableRef &operator=(NullableRef &other) {
     ref_ = std::move(other.ref_);

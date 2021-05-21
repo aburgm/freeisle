@@ -294,7 +294,7 @@ TEST(Saver, BinaryInline) {
   const std::vector<uint8_t> result =
       freeisle::json::saver::save_root_object(handler, nullptr);
 
-  const std::string expected = "{\"data\": \"8HoBMQ==\"}";
+  const std::string expected = "{\"data\": \"base64:8HoBMQ==\"}";
   freeisle::json::test::check(result, expected);
 }
 
@@ -305,7 +305,7 @@ TEST_F(SaverFileTest, BinaryExternal) {
   const std::vector<uint8_t> result =
       freeisle::fs::read_file("test.json", nullptr);
 
-  const std::string expected = "{\"data\": \"data.bin\"}";
+  const std::string expected = "{\"data\": \"file:data.bin\"}";
   freeisle::json::test::check(result, expected);
 
   std::vector<uint8_t> data = freeisle::fs::read_file("data.bin", nullptr);

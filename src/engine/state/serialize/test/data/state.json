@@ -1,0 +1,109 @@
+{
+  "scenario": {
+    "name": "My Scenario",
+    "description": "East End Boys and West End Girls",
+    "shops": {},
+    "units": {
+      "unitdef001": {
+        "name": "grunt",
+        "description": "Some description",
+        "level": "land",
+        "caps": ["capture"],
+        "armor": 250,
+        "movement": 500,
+        "fuel": 35,
+        "weight": 100,
+        "movement_cost": {
+          "grass": 100,
+          "desert": 150,
+          "snow": 250,
+          "shallow_water": 0,
+          "deep_water": 0,
+          "hill": 200,
+          "mountain": 300,
+          "forest": 150,
+          "road": 90,
+          "crevice": 250,
+          "fortification": 100
+        },
+        "protection": {
+          "grass": 100,
+          "desert": 100,
+          "snow": 100,
+          "shallow_water": 100,
+          "deep_water": 100,
+          "hill": 150,
+          "mountain": 200,
+          "forest": 125,
+          "road": 100,
+          "crevice": 125,
+          "fortification": 200
+        },
+        "resistance": {
+          "small_caliber": 100,
+          "big_caliber": 100,
+          "missile": 100,
+          "energy": 100,
+          "explosive": 80
+        },
+        "supplies": {
+          "fuel": 0,
+          "repair": 0,
+          "ammo": {
+            "small_caliber": 0,
+            "big_caliber": 0,
+            "missile": 0,
+            "energy": 0,
+            "explosive": 0
+          }
+        },
+        "weapons": {
+          "rifle": {
+            "name": "Rifle",
+            "damage_type": "small_caliber",
+            "damage": 180,
+            "min_range": 1,
+            "max_range": 1,
+            "ammo": 6
+          }
+        },
+        "container": {
+          "max_units": 0,
+          "max_weight": 0,
+          "supported_levels": []
+        },
+        "value": 800,
+        "view_range": 4,
+        "jamming_range": 1
+      }
+    },
+    "map": {
+      "grid": "base64:iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAADUlEQVQYlWNgGAWkAwABNgABxYufBwAAAABJRU5ErkJggg==",
+      "decorations": {
+        "deco001": {
+          "name": "flowers",
+          "index": 1
+        }
+      }
+    }
+  },
+  "teams": {},
+  "players": {
+    "player001": {
+      "name": "my_player",
+      "color": {
+        "red": 255,
+        "green": 0,
+        "blue": 0
+      },
+      "fow": "base64:AAAAAAAAAAAAAAAAAA==",
+      "is_eliminated": false,
+      "lose_conditions": [],
+      "wealth": 0
+    }
+  },
+  "shops": {},
+  "units": {},
+  "turn": 1,
+  "player_at_turn": "player001"
+}

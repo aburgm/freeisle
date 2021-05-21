@@ -13,7 +13,7 @@ namespace freeisle::fs::path {
 /**
  * Returns whether the given path is an absolute path or not.
  */
-bool is_absolute(const std::string &path);
+bool is_absolute(const std::string_view &path);
 
 /**
  * Return the directory name of the given path, i.e. all directory
@@ -52,7 +52,7 @@ std::pair<std::string, std::string> split(const std::string &path);
  * the given path is a relative path, then the resolved path will be
  * relative as well.
  */
-std::string resolve(const std::string &path);
+std::string resolve(const std::string_view &path);
 
 /**
  * Join two path components with the directory separator. If the second
