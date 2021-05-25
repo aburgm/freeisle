@@ -12,7 +12,7 @@ class FileId {
   friend class File;
 
 public:
-  FileId() = delete;
+  FileId() = default;
   FileId(const FileId &) = default;
   FileId(FileId &&) = default;
   FileId &operator=(const FileId &) = default;
@@ -21,6 +21,8 @@ public:
   bool operator==(FileId rhs) const;
   bool operator!=(FileId rhs) const;
   bool operator<(FileId rhs) const;
+
+  explicit operator bool() const;
 
 private:
   FileId(uint64_t dev, uint64_t ino);

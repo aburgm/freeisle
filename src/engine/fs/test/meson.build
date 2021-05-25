@@ -8,7 +8,7 @@ test_env.prepend('LD_PRELOAD', readwrite_mock.full_path())
 
 t = executable(
   'fs_test',
-  ['TestDirectory.cc', 'TestFile.cc'],
+  ['TestDirectory.cc', 'TestFile.cc', 'TestPath.cc'],
   dependencies : [gtest],
   link_with : fs_lib,
   include_directories : engine)
