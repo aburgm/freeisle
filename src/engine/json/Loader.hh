@@ -112,14 +112,6 @@ struct Context {
    * "", which refers to the root file being loaded.
    */
   std::map<std::string, IncludeInfo> include_map;
-
-  /**
-   * A map of arbitrary loaded objects to IDs, so that the same IDs can be
-   * re-used when saving the objects again, so that the include references
-   * can be propagated during save. Needs to be kept up-to-date if the object
-   * containers are modified between loading and saving.
-   */
-  std::map<const void *, std::string> object_ids;
 };
 
 /**
