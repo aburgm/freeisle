@@ -1,0 +1,8 @@
+{
+  "include": "abc_c_override.frag.json",
+  "a": "hi",
+  "b": 31337,
+  "c": {
+    "include": "defg_working.json"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "include": "abc_custom_error_in_include.json",
+  "a": "hi",
+  "c": {
+    "include": "defg_working.json"
+  }
+}

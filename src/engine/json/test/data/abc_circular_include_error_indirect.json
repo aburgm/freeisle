@@ -1,0 +1,5 @@
+{
+  "include": "abc_circular_include_error_indirect.frag.json",
+  "a": "hi",
+  "b": 31337
+}
