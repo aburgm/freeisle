@@ -1,0 +1,4 @@
+{
+  "a": "this won't work",
+  "include": "abc_circular_include_error_indirect.json"
+}

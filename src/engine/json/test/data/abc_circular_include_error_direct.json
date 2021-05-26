@@ -1,0 +1,11 @@
+{
+  "include": "abc_circular_include_error_direct.json",
+  "a": "hi",
+  "b": 31337,
+  "c": {
+    "d": 42,
+    "e": true,
+    "f": "string",
+    "g": 34.2
+  }
+}

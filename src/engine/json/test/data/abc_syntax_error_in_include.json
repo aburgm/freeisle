@@ -1,0 +1,7 @@
+{
+  "a": "hi",
+  "b": 31337,
+  "c": {
+    "include": "defg_syntax_error.json"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "include": "abc_working.json",
+  "a": "hi",
+  "b": 31337,
+  "c": {
+    "include": "defg_custom_error.json"
+  }
+}

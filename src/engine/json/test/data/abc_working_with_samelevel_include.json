@@ -1,0 +1,8 @@
+{
+  "a": "hi",
+  "b": 31337,
+  "c": {
+    "include": "defg_working.json",
+    "f": "another string"
+  }
+}
