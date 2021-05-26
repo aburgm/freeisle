@@ -240,10 +240,9 @@ void resolve_includes(Context &ctx, Json::Value &value) {
   try {
     root = read_json_document(source.source_data);
   } catch (const std::runtime_error &ex) {
-    throw Error::create(
-        ctx, "include", value["include"],
-        fmt::format("Failed to parse JSON document at \"{}\": {}", full_path,
-                    ex.what()));
+    std::string message = fmt::format(
+        "Failed to parse JSON document at \"{}\": {}", full_path, ex.what());
+    throw Error::create(ctx, "include", value["include"], std::move(message));
   }
 
   ctx.sources.push_back(std::move(source));
