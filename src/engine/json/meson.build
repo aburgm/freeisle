@@ -1,6 +1,6 @@
 json_lib = static_library(
   'json', [
-    'Loader.cc',
+    'Loader.cc', 'Saver.cc'
   ],
   link_with : [core_lib, fs_lib],
   dependencies : [fmt, jsoncpp],
