@@ -26,6 +26,17 @@
 
 namespace {
 
+template <typename MapT, typename KeyT>
+const typename MapT::mapped_type &get_key(const MapT &map, const KeyT &key) {
+  const typename MapT::const_iterator iter = map.find(key);
+  if (iter == map.end()) {
+    throw std::invalid_argument(
+        fmt::format("Map does not contain key \"{}\"", key));
+  }
+
+  return iter->second;
+}
+
 struct Defg {
   uint32_t d;
   bool e;
@@ -66,7 +77,7 @@ struct AbcHandler {
   void load(freeisle::json::loader::Context &ctx, Json::Value &value) {
     abc.a = freeisle::json::loader::load<std::string>(ctx, value, "a");
     abc.b = freeisle::json::loader::load<uint32_t>(ctx, value, "b");
-    load_object(ctx, "c", value["c"], defg_handler);
+    load_object(ctx, value, "c", defg_handler);
   }
 };
 
@@ -80,13 +91,16 @@ TEST(Loader, Simple) {
       "{\"d\": 54, \"e\": true, \"f\": \"omg\", \"g\": 3.5}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  freeisle::json::loader::load_root_object(data, handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(defg.d, 54);
   EXPECT_EQ(defg.e, true);
   EXPECT_EQ(defg.f, "omg");
   EXPECT_EQ(defg.g, 3.5f);
   EXPECT_EQ(defg.h, false);
+
+  EXPECT_TRUE(include_map.empty());
 }
 
 TEST(Loader, SimpleMissingField) {
@@ -166,7 +180,8 @@ TEST(Loader, Composite) {
                            "\"e\": true, \"f\": \"omg\", \"g\": 3.5}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  freeisle::json::loader::load_root_object(data, handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(abc.a, "text");
   EXPECT_EQ(abc.b, 12);
@@ -175,6 +190,8 @@ TEST(Loader, Composite) {
   EXPECT_EQ(abc.c.f, "omg");
   EXPECT_EQ(abc.c.g, 3.5f);
   EXPECT_EQ(abc.c.h, false);
+
+  EXPECT_TRUE(include_map.empty());
 }
 
 TEST(Loader, IncludeFromMemory) {
@@ -198,26 +215,43 @@ TEST(Loader, SimpleFromFile) {
   Defg defg{};
   DefgHandler handler{defg};
 
-  freeisle::json::loader::load_root_object("data/defg_working.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object("data/defg_working.json",
+                                               handler);
 
   EXPECT_EQ(defg.d, 1337);
   EXPECT_EQ(defg.e, true);
   EXPECT_EQ(defg.f, "string");
   EXPECT_EQ(defg.g, 34.2f);
   EXPECT_EQ(defg.h, true);
+
+  EXPECT_TRUE(include_map.empty());
 }
 
 TEST(Loader, SimpleFromFileWithNodeRemoval) {
   Defg defg{};
   DefgHandler handler{defg};
 
-  freeisle::json::loader::load_root_object("data/defg_removal.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object("data/defg_removal.json",
+                                               handler);
 
   EXPECT_EQ(defg.d, 1337);
   EXPECT_EQ(defg.e, true);
   EXPECT_EQ(defg.f, "overridden");
   EXPECT_EQ(defg.g, 34.2f);
   EXPECT_EQ(defg.h, false);
+
+  EXPECT_EQ(include_map.size(), 1);
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
+      include_map.find("");
+  EXPECT_NE(iter, include_map.end());
+
+  EXPECT_EQ(iter->second.filename, "defg_working.json");
+  EXPECT_EQ(iter->second.override_keys.size(), 2);
+  EXPECT_EQ(get_key(iter->second.override_keys, "f"), true);
+  EXPECT_EQ(get_key(iter->second.override_keys, "h"), false);
 }
 
 TEST(Loader, SyntaxErrorFromFile) {
@@ -247,7 +281,9 @@ TEST(Loader, CompositeFromFile) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object("data/abc_working.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object("data/abc_working.json",
+                                               handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 31337);
@@ -256,14 +292,17 @@ TEST(Loader, CompositeFromFile) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, false);
+
+  EXPECT_TRUE(include_map.empty());
 }
 
 TEST(Loader, CompositeWithSimpleInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object("data/abc_working_with_include.json",
-                                           handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/abc_working_with_include.json", handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 31337);
@@ -272,14 +311,25 @@ TEST(Loader, CompositeWithSimpleInclude) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, true);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
+      include_map.find(".c");
+
+  EXPECT_EQ(include_map.size(), 1);
+  ASSERT_NE(iter, include_map.end());
+
+  EXPECT_EQ(iter->second.filename, "defg_working.json");
+  EXPECT_EQ(iter->second.override_keys.size(), 0);
 }
 
 TEST(Loader, CompositeWithSamelevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object(
-      "data/abc_working_with_samelevel_include.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/abc_working_with_samelevel_include.json", handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 31337);
@@ -288,14 +338,26 @@ TEST(Loader, CompositeWithSamelevelInclude) {
   EXPECT_EQ(abc.c.f, "another string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, true);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
+      include_map.find(".c");
+
+  EXPECT_EQ(include_map.size(), 1);
+  ASSERT_NE(iter, include_map.end());
+
+  EXPECT_EQ(iter->second.filename, "defg_working.json");
+  EXPECT_EQ(iter->second.override_keys.size(), 1);
+  EXPECT_EQ(get_key(iter->second.override_keys, "f"), true);
 }
 
 TEST(Loader, CompositeWithSublevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object(
-      "data/abc_working_with_sublevel_include.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/abc_working_with_sublevel_include.json", handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 31337);
@@ -304,14 +366,34 @@ TEST(Loader, CompositeWithSublevelInclude) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, false);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
+      include_map.find("");
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
+      include_map.find(".c");
+
+  EXPECT_EQ(include_map.size(), 2);
+  ASSERT_NE(top_iter, include_map.end());
+  ASSERT_NE(sub_iter, include_map.end());
+
+  EXPECT_EQ(top_iter->second.filename, "abc_working.json");
+  EXPECT_EQ(top_iter->second.override_keys.size(), 1);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "c"), true);
+
+  EXPECT_EQ(sub_iter->second.filename, "");
+  EXPECT_EQ(sub_iter->second.override_keys.size(), 1);
+  EXPECT_EQ(get_key(sub_iter->second.override_keys, "d"), true);
 }
 
 TEST(Loader, CompositeWithMultilevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object(
-      "data/abc_working_with_multilevel_include.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/abc_working_with_multilevel_include.json", handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 31337);
@@ -320,14 +402,37 @@ TEST(Loader, CompositeWithMultilevelInclude) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, true);
+
+  EXPECT_EQ(include_map.size(), 2);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
+      include_map.find("");
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
+      include_map.find(".c");
+
+  EXPECT_EQ(include_map.size(), 2);
+  ASSERT_NE(top_iter, include_map.end());
+  ASSERT_NE(sub_iter, include_map.end());
+
+  EXPECT_EQ(top_iter->second.filename, "abc_c_override.frag.json");
+  EXPECT_EQ(top_iter->second.override_keys.size(), 3);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "a"), true);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "b"), true);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "c"), true);
+
+  EXPECT_EQ(sub_iter->second.filename, "defg_working.json");
+  EXPECT_EQ(sub_iter->second.override_keys.size(), 0);
 }
 
 TEST(Loader, CompositeWithDoubleInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object(
-      "data/abc_working_with_double_include.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/abc_working_with_double_include.json", handler);
 
   EXPECT_EQ(abc.a, "yeah");
   EXPECT_EQ(abc.b, 31337);
@@ -336,14 +441,26 @@ TEST(Loader, CompositeWithDoubleInclude) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, false);
+
+  EXPECT_EQ(include_map.size(), 1);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
+      include_map.find("");
+
+  EXPECT_EQ(iter->second.filename, "abc_working_with_sublevel_include.json");
+  EXPECT_EQ(iter->second.override_keys.size(), 1);
+  EXPECT_EQ(get_key(iter->second.override_keys, "a"), true);
 }
 
 TEST(Loader, CompositeWithFixedErrorFromSublevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object(
-      "data/abc_working_with_fixed_error_from_sublevel_include.json", handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/abc_working_with_fixed_error_from_sublevel_include.json",
+          handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 37);
@@ -352,15 +469,36 @@ TEST(Loader, CompositeWithFixedErrorFromSublevelInclude) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, false);
+
+  EXPECT_EQ(include_map.size(), 2);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
+      include_map.find("");
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
+      include_map.find(".c");
+
+  ASSERT_NE(top_iter, include_map.end());
+  ASSERT_NE(sub_iter, include_map.end());
+
+  EXPECT_EQ(top_iter->second.filename, "abc_custom_error.json");
+  EXPECT_EQ(top_iter->second.override_keys.size(), 1);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "c"), true);
+
+  EXPECT_EQ(sub_iter->second.filename, "");
+  EXPECT_EQ(sub_iter->second.override_keys.size(), 1);
+  EXPECT_EQ(get_key(sub_iter->second.override_keys, "e"), true);
 }
 
 TEST(Loader, CompositeWithFixedErrorFromMultilevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object(
-      "data/abc_working_with_fixed_error_from_multilevel_include.json",
-      handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/abc_working_with_fixed_error_from_multilevel_include.json",
+          handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 37);
@@ -369,15 +507,37 @@ TEST(Loader, CompositeWithFixedErrorFromMultilevelInclude) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, true);
+
+  EXPECT_EQ(include_map.size(), 2);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
+      include_map.find("");
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
+      include_map.find(".c");
+
+  ASSERT_NE(top_iter, include_map.end());
+  ASSERT_NE(sub_iter, include_map.end());
+
+  EXPECT_EQ(top_iter->second.filename, "abc_custom_error.json");
+  EXPECT_EQ(top_iter->second.override_keys.size(), 2);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "a"), true);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "c"), true);
+
+  EXPECT_EQ(sub_iter->second.filename, "defg_working.json");
+  EXPECT_EQ(sub_iter->second.override_keys.size(), 0);
 }
 
 TEST(Loader, CompositeWithFixedErrorFromMultilevelDoubleInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  freeisle::json::loader::load_root_object(
-      "data/abc_working_with_fixed_error_from_multilevel_double_include.json",
-      handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(
+          "data/"
+          "abc_working_with_fixed_error_from_multilevel_double_include.json",
+          handler);
 
   EXPECT_EQ(abc.a, "hi");
   EXPECT_EQ(abc.b, 31337);
@@ -386,6 +546,26 @@ TEST(Loader, CompositeWithFixedErrorFromMultilevelDoubleInclude) {
   EXPECT_EQ(abc.c.f, "string");
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, true);
+
+  EXPECT_EQ(include_map.size(), 2);
+
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
+      include_map.find("");
+  const std::map<std::string,
+                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
+      include_map.find(".c");
+
+  ASSERT_NE(top_iter, include_map.end());
+  ASSERT_NE(sub_iter, include_map.end());
+
+  EXPECT_EQ(top_iter->second.filename, "abc_custom_error_in_include.json");
+  EXPECT_EQ(top_iter->second.override_keys.size(), 2);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "a"), true);
+  EXPECT_EQ(get_key(top_iter->second.override_keys, "c"), true);
+
+  EXPECT_EQ(sub_iter->second.filename, "defg_working.json");
+  EXPECT_EQ(sub_iter->second.override_keys.size(), 0);
 }
 
 TEST(Loader, CircularIncludeDirect) {
