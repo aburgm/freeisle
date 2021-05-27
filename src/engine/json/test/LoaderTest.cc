@@ -1,5 +1,5 @@
 #include "json/Loader.hh"
-#include "json/Util.hh"
+#include "json/LoadUtil.hh"
 
 #include "fs/Path.hh"
 
@@ -91,7 +91,7 @@ TEST(Loader, Simple) {
       "{\"d\": 54, \"e\": true, \"f\": \"omg\", \"g\": 3.5}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(defg.d, 54);
@@ -180,7 +180,7 @@ TEST(Loader, Composite) {
                            "\"e\": true, \"f\": \"omg\", \"g\": 3.5}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(abc.a, "text");
@@ -215,7 +215,7 @@ TEST(Loader, SimpleFromFile) {
   Defg defg{};
   DefgHandler handler{defg};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object("data/defg_working.json",
                                                handler);
 
@@ -232,7 +232,7 @@ TEST(Loader, SimpleFromFileWithNodeRemoval) {
   Defg defg{};
   DefgHandler handler{defg};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object("data/defg_removal.json",
                                                handler);
 
@@ -243,9 +243,8 @@ TEST(Loader, SimpleFromFileWithNodeRemoval) {
   EXPECT_EQ(defg.h, false);
 
   EXPECT_EQ(include_map.size(), 1);
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
-      include_map.find("");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      iter = include_map.find("");
   EXPECT_NE(iter, include_map.end());
 
   EXPECT_EQ(iter->second.filename, "defg_working.json");
@@ -281,7 +280,7 @@ TEST(Loader, CompositeFromFile) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object("data/abc_working.json",
                                                handler);
 
@@ -300,7 +299,7 @@ TEST(Loader, CompositeWithSimpleInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/abc_working_with_include.json", handler);
 
@@ -312,9 +311,8 @@ TEST(Loader, CompositeWithSimpleInclude) {
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, true);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
-      include_map.find(".c");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      iter = include_map.find(".c");
 
   EXPECT_EQ(include_map.size(), 1);
   ASSERT_NE(iter, include_map.end());
@@ -327,7 +325,7 @@ TEST(Loader, CompositeWithSamelevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/abc_working_with_samelevel_include.json", handler);
 
@@ -339,9 +337,8 @@ TEST(Loader, CompositeWithSamelevelInclude) {
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, true);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
-      include_map.find(".c");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      iter = include_map.find(".c");
 
   EXPECT_EQ(include_map.size(), 1);
   ASSERT_NE(iter, include_map.end());
@@ -355,7 +352,7 @@ TEST(Loader, CompositeWithSublevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/abc_working_with_sublevel_include.json", handler);
 
@@ -367,12 +364,10 @@ TEST(Loader, CompositeWithSublevelInclude) {
   EXPECT_EQ(abc.c.g, 34.2f);
   EXPECT_EQ(abc.c.h, false);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
-      include_map.find("");
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
-      include_map.find(".c");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      top_iter = include_map.find("");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      sub_iter = include_map.find(".c");
 
   EXPECT_EQ(include_map.size(), 2);
   ASSERT_NE(top_iter, include_map.end());
@@ -391,7 +386,7 @@ TEST(Loader, CompositeWithMultilevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/abc_working_with_multilevel_include.json", handler);
 
@@ -405,12 +400,10 @@ TEST(Loader, CompositeWithMultilevelInclude) {
 
   EXPECT_EQ(include_map.size(), 2);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
-      include_map.find("");
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
-      include_map.find(".c");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      top_iter = include_map.find("");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      sub_iter = include_map.find(".c");
 
   EXPECT_EQ(include_map.size(), 2);
   ASSERT_NE(top_iter, include_map.end());
@@ -430,7 +423,7 @@ TEST(Loader, CompositeWithDoubleInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/abc_working_with_double_include.json", handler);
 
@@ -444,9 +437,8 @@ TEST(Loader, CompositeWithDoubleInclude) {
 
   EXPECT_EQ(include_map.size(), 1);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator iter =
-      include_map.find("");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      iter = include_map.find("");
 
   EXPECT_EQ(iter->second.filename, "abc_working_with_sublevel_include.json");
   EXPECT_EQ(iter->second.override_keys.size(), 1);
@@ -457,7 +449,7 @@ TEST(Loader, CompositeWithFixedErrorFromSublevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/abc_working_with_fixed_error_from_sublevel_include.json",
           handler);
@@ -472,12 +464,10 @@ TEST(Loader, CompositeWithFixedErrorFromSublevelInclude) {
 
   EXPECT_EQ(include_map.size(), 2);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
-      include_map.find("");
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
-      include_map.find(".c");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      top_iter = include_map.find("");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      sub_iter = include_map.find(".c");
 
   ASSERT_NE(top_iter, include_map.end());
   ASSERT_NE(sub_iter, include_map.end());
@@ -495,7 +485,7 @@ TEST(Loader, CompositeWithFixedErrorFromMultilevelInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/abc_working_with_fixed_error_from_multilevel_include.json",
           handler);
@@ -510,12 +500,10 @@ TEST(Loader, CompositeWithFixedErrorFromMultilevelInclude) {
 
   EXPECT_EQ(include_map.size(), 2);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
-      include_map.find("");
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
-      include_map.find(".c");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      top_iter = include_map.find("");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      sub_iter = include_map.find(".c");
 
   ASSERT_NE(top_iter, include_map.end());
   ASSERT_NE(sub_iter, include_map.end());
@@ -533,7 +521,7 @@ TEST(Loader, CompositeWithFixedErrorFromMultilevelDoubleInclude) {
   Abc abc{};
   AbcHandler handler{abc};
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(
           "data/"
           "abc_working_with_fixed_error_from_multilevel_double_include.json",
@@ -549,12 +537,10 @@ TEST(Loader, CompositeWithFixedErrorFromMultilevelDoubleInclude) {
 
   EXPECT_EQ(include_map.size(), 2);
 
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator top_iter =
-      include_map.find("");
-  const std::map<std::string,
-                 freeisle::json::loader::IncludeInfo>::const_iterator sub_iter =
-      include_map.find(".c");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      top_iter = include_map.find("");
+  const std::map<std::string, freeisle::json::IncludeInfo>::const_iterator
+      sub_iter = include_map.find(".c");
 
   ASSERT_NE(top_iter, include_map.end());
   ASSERT_NE(sub_iter, include_map.end());

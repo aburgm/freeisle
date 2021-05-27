@@ -29,8 +29,7 @@ template <> inline std::string as(const Json::Value &val) {
  * is not present.
  */
 template <typename T>
-T load(freeisle::json::loader::Context &ctx, Json::Value &value,
-       const char *key) {
+T load(Context &ctx, Json::Value &value, const char *key) {
   if (!value.isMember(key)) {
     throw Error::create(ctx, "", value,
                         fmt::format("Mandatory field \"{}\" is missing", key));
@@ -49,8 +48,8 @@ T load(freeisle::json::loader::Context &ctx, Json::Value &value,
  * allowed enum values.
  */
 template <typename T, uint32_t N>
-T load_enum(freeisle::json::loader::Context &ctx, Json::Value &value,
-            const char *key, const core::EnumEntry<T> (&entries)[N]) {
+T load_enum(Context &ctx, Json::Value &value, const char *key,
+            const core::EnumEntry<T> (&entries)[N]) {
   const std::string str = load<std::string>(ctx, value, key);
   const T *val = freeisle::core::from_string(entries, str.c_str());
 
@@ -112,14 +111,16 @@ public:
    * called on the child handler before it is involked to load the child
    * object.
    */
-  MappedContainerHandler(ChildHandlerT child_handler = ChildHandlerT{})
-      : child_handler_(child_handler) {}
+  MappedContainerHandler(
+      std::map<const void *, std::string> *object_ids = nullptr,
+      ChildHandlerT child_handler = ChildHandlerT{})
+      : child_handler_(child_handler), object_ids_(object_ids) {}
 
   /**
    * Load the container from the given json value. The value needs to be
    * of type object.
    */
-  void load(loader::Context &ctx, Json::Value &value) {
+  void load(Context &ctx, Json::Value &value) {
     assert(container_ != nullptr);
 
     container_->clear();
@@ -138,7 +139,9 @@ public:
     typename ContainerT::iterator iter = container_->begin();
     for (const std::string &key : members) {
       assert(iter != container_->end());
-      object_ids_[&*iter] = key;
+      if (object_ids_) {
+        (*object_ids_)[&*iter] = key;
+      }
       index_[key] = iter;
       ++iter;
     }
@@ -175,7 +178,7 @@ private:
    * can be propagated during save. Needs to be kept up-to-date if the object
    * containers are modified between loading and saving.
    */
-  std::map<const void *, std::string> object_ids_;
+  std::map<const void *, std::string> *object_ids_;
 };
 
 } // namespace freeisle::json::loader

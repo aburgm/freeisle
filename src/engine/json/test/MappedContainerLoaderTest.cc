@@ -1,4 +1,4 @@
-#include "json/Util.hh"
+#include "json/LoadUtil.hh"
 #include "json/Loader.hh"
 
 #include "fs/Path.hh"
@@ -52,7 +52,8 @@ struct DefgHandler {
 };
 
 struct AbcHandler {
-  AbcHandler(Abc &abc) : abc(abc) {}
+  AbcHandler(Abc &abc, std::map<const void *, std::string> *object_id_map)
+      : abc(abc), defg_handler(object_id_map) {}
 
   Abc &abc;
   freeisle::json::loader::MappedContainerHandler<std::vector<Defg>, DefgHandler>
@@ -66,9 +67,9 @@ struct AbcHandler {
 
 } // namespace
 
-TEST(Util, SuperEmpty) {
+TEST(MappedContainerLoader, SuperEmpty) {
   Abc abc;
-  AbcHandler handler{abc};
+  AbcHandler handler(abc, nullptr);
 
   const std::string text = "{}";
   std::vector<uint8_t> data(text.begin(), text.end());
@@ -85,29 +86,29 @@ TEST(Util, SuperEmpty) {
   EXPECT_TRUE(abc.defgs.empty());
 }
 
-TEST(Util, Empty) {
+TEST(MappedContainerLoader, Empty) {
   Abc abc;
-  AbcHandler handler{abc};
+  AbcHandler handler(abc, nullptr);
 
   const std::string text = "{\"defgs\": {}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_TRUE(abc.defgs.empty());
   EXPECT_TRUE(include_map.empty());
 }
 
-TEST(Util, SingleObject) {
+TEST(MappedContainerLoader, SingleObject) {
   Abc abc;
-  AbcHandler handler{abc};
+  AbcHandler handler(abc, nullptr);
 
   const std::string text =
       "{\"defgs\": {\"obj1\": { \"d\": 30, \"e\": \"Enum1\" }}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(abc.defgs.size(), 1);
@@ -119,16 +120,16 @@ TEST(Util, SingleObject) {
   EXPECT_TRUE(include_map.empty());
 }
 
-TEST(Util, TwoObjects) {
+TEST(MappedContainerLoader, TwoObjects) {
   Abc abc;
-  AbcHandler handler{abc};
+  AbcHandler handler(abc, nullptr);
 
   const std::string text =
       "{\"defgs\": {\"obj1\": { \"d\": 30, \"e\": \"Enum1\" }, \"obj2\": { "
       "\"d\": 35, \"e\": \"Enum2\" }}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
       freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(abc.defgs.size(), 2);
@@ -142,9 +143,38 @@ TEST(Util, TwoObjects) {
   EXPECT_TRUE(include_map.empty());
 }
 
-TEST(Util, InvalidObjectType) {
+TEST(MappedContainerLoader, TwoObjectsWithIdMap) {
   Abc abc;
-  AbcHandler handler{abc};
+
+  std::map<const void *, std::string> object_id_map;
+  AbcHandler handler(abc, &object_id_map);
+
+  const std::string text =
+      "{\"defgs\": {\"obj1\": { \"d\": 30, \"e\": \"Enum1\" }, \"obj2\": { "
+      "\"d\": 35, \"e\": \"Enum2\" }}}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(data, handler);
+
+  EXPECT_EQ(abc.defgs.size(), 2);
+  EXPECT_EQ(abc.defgs[0].d, 30);
+  EXPECT_EQ(abc.defgs[0].e, Enum1);
+  EXPECT_EQ(abc.defgs[1].d, 35);
+  EXPECT_EQ(abc.defgs[1].e, Enum2);
+  EXPECT_EQ(handler.defg_handler.lookup("obj1"), &abc.defgs[0]);
+  EXPECT_EQ(handler.defg_handler.lookup("obj2"), &abc.defgs[1]);
+
+  EXPECT_TRUE(include_map.empty());
+
+  EXPECT_EQ(object_id_map.size(), 2);
+  EXPECT_EQ(object_id_map[&abc.defgs[0]], "obj1");
+  EXPECT_EQ(object_id_map[&abc.defgs[1]], "obj2");
+}
+
+TEST(MappedContainerLoader, InvalidObjectType) {
+  Abc abc;
+  AbcHandler handler(abc, nullptr);
 
   const std::string text = "{\"defgs\": {\"obj1\": 30}}";
   std::vector<uint8_t> data(text.begin(), text.end());
@@ -160,9 +190,9 @@ TEST(Util, InvalidObjectType) {
   }
 }
 
-TEST(Util, InvalidObject) {
+TEST(MappedContainerLoader, InvalidObject) {
   Abc abc;
-  AbcHandler handler{abc};
+  AbcHandler handler(abc, nullptr);
 
   const std::string text =
       "{\"defgs\": {\"obj1\": { \"d\": 30, \"e\": \"Enum3\" }}}";

@@ -1,6 +1,6 @@
 t = executable(
   'json_test',
-  ['LoaderTest.cc', 'UtilTest.cc'],
+  ['LoaderTest.cc', 'MappedContainerLoaderTest.cc', 'SaverTest.cc', 'MappedContainerSaverTest.cc'],
   dependencies : [gtest, json_dep],
   include_directories : engine)
 
