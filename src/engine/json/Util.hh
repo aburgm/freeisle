@@ -32,15 +32,14 @@ template <typename T>
 T load(freeisle::json::loader::Context &ctx, Json::Value &value,
        const char *key) {
   if (!value.isMember(key)) {
-    throw freeisle::json::loader::Error::create(
-        ctx, "", value, fmt::format("Mandatory field \"{}\" is missing", key));
+    throw Error::create(ctx, "", value,
+                        fmt::format("Mandatory field \"{}\" is missing", key));
   }
 
   try {
     return as<T>(value[key]);
   } catch (const Json::Exception &ex) {
-    throw freeisle::json::loader::Error::create(ctx, key, value[key],
-                                                ex.what());
+    throw Error::create(ctx, key, value[key], ex.what());
   }
 }
 
@@ -68,6 +67,31 @@ T load_enum(freeisle::json::loader::Context &ctx, Json::Value &value,
   }
 
   return *val;
+}
+
+/**
+ * Load an object from a JSON object. The given handler is responsible for
+ * loading the fields of the object from the JSON object. This function handles
+ * include references and keeps tracking the tree walking in the context.
+ */
+template <typename THandler>
+void load_object(Context &ctx, Json::Value &value, const char *key,
+                 THandler &handler) {
+  if (!value.isMember(key)) {
+    throw Error::create(ctx, "", value,
+                        fmt::format("Mandatory field \"{}\" is missing", key));
+  }
+
+  if (!value[key].isObject()) {
+    throw Error::create(ctx, key, value[key],
+                        "Expected value to be of object type");
+  }
+
+  const TreeDescent descent(ctx, key);
+
+  resolve_includes(ctx, value[key]);
+
+  handler.load(ctx, value[key]);
 }
 
 /**
@@ -106,7 +130,7 @@ public:
     for (const std::string &key : members) {
       container_->emplace_back();
       child_handler_.set(container_->back());
-      loader::load_object(ctx, key.c_str(), value[key], child_handler_);
+      loader::load_object(ctx, value, key.c_str(), child_handler_);
     }
 
     // pass 2: populate index. Separate pass in case

@@ -54,7 +54,7 @@ struct SourceInfo {
 /**
  * Information about the origin of an object node in the JSON document.
  */
-struct IncludeInfo {
+struct OriginInfo {
   /**
    * A map of key names to where the corresponding key was loaded from.
    * For simple keys, i.e. primitive types or lists, this is always set if
@@ -64,9 +64,29 @@ struct IncludeInfo {
    * For object types, this is only set if the whole object was loaded from the
    * given source. If some keys of the include were defined in the base main
    * file, there will not be an entry here, but there will be entries for the
-   * keys from the included object in the corresponding children's IncludeInfo.
+   * keys from the included object in the corresponding children's OriginInfo.
    */
   std::map<std::string, const SourceInfo *> included_from;
+};
+
+/**
+ * Information about include directives in a JSON document, so that
+ * they can be replicated on save.
+ */
+struct IncludeInfo {
+  /**
+   * Relative path to include file. Empty if the include happened at
+   * a higher level in the tree (and therefore should not be replicated
+   * at this level).
+   */
+  std::string filename;
+
+  /**
+   * Keys that are defined in the source file and that override anything from
+   * the include files. The boolean indicates whether it was overridden or
+   * removed.
+   */
+  std::map<std::string, bool> override_keys;
 };
 
 /**
@@ -108,8 +128,14 @@ struct Context {
    * Mapping from paths in the object tree in the form of ".a.b.c" to
    * the source information of where it was loaded from. If for a given
    * tree path there is no entry in the include_map, then the path
-   * from the parent applies. There is always an entry for the root path,
-   * "", which refers to the root file being loaded.
+   * from the parent applies.
+   */
+  std::map<std::string, OriginInfo> origin_map;
+
+  /**
+   * Mapping from paths in the object tree in the form of ".a.b.c" to
+   * include information. Any include reference that is resolved in the
+   * main file wil get one entry in the include map.
    */
   std::map<std::string, IncludeInfo> include_map;
 };
@@ -266,32 +292,17 @@ make_root_source_context(std::vector<uint8_t> data);
 std::pair<Context, Json::Value> make_root_file_context(const char *path);
 
 /**
- * Load an object from a JSON object. The given handler is responsible for
- * loading the fields of the object from the JSON object. This function handles
- * include references and keeps tracking the tree walking in the context.
- */
-template <typename THandler>
-void load_object(Context &ctx, const char *key, Json::Value &value,
-                 THandler &handler) {
-  const TreeDescent descent(ctx, key);
-
-  resolve_includes(ctx, value);
-
-  handler.load(ctx, value);
-}
-
-// TODO(armin): The below two functions should return include_map and
-// object_ids.
-
-/**
  * Main entry point to the loader for loading an in-memory JSON
  * representation. In this form, include references are not resolved.
  */
 template <typename THandler>
-void load_root_object(std::vector<uint8_t> data, THandler &handler) {
+std::map<std::string, IncludeInfo> load_root_object(std::vector<uint8_t> data,
+                                                    THandler &handler) {
   std::pair<Context, Json::Value> pair =
       make_root_source_context(std::move(data));
-  load_object(pair.first, "root", pair.second, handler);
+  resolve_includes(pair.first, pair.second);
+  handler.load(pair.first, pair.second);
+  return std::move(pair.first.include_map);
 }
 
 /**
@@ -300,9 +311,12 @@ void load_root_object(std::vector<uint8_t> data, THandler &handler) {
  * file path.
  */
 template <typename THandler>
-void load_root_object(const char *path, THandler &handler) {
+std::map<std::string, IncludeInfo> load_root_object(const char *path,
+                                                    THandler &handler) {
   std::pair<Context, Json::Value> pair = make_root_file_context(path);
-  load_object(pair.first, "root", pair.second, handler);
+  resolve_includes(pair.first, pair.second);
+  handler.load(pair.first, pair.second);
+  return std::move(pair.first.include_map);
 }
 
 } // namespace freeisle::json::loader

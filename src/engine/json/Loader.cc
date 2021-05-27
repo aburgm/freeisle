@@ -13,6 +13,28 @@ namespace freeisle::json::loader {
 
 namespace {
 
+void extract_include_info(Context &ctx, const std::string &filename,
+                          const std::string &location,
+                          const Json::Value &value) {
+  // might exist already if there was another include at a higher level:
+  IncludeInfo &info = ctx.include_map[location];
+
+  info.filename = filename;
+  for (const std::string &member : value.getMemberNames()) {
+    if (member == "include") {
+      // We will handle this later as soon as resolve_include is called
+      // for it.
+      continue;
+    }
+
+    info.override_keys[member] = !value[member].isNull();
+    if (value[member].isObject()) {
+      // filename is unset for higher levels:
+      extract_include_info(ctx, "", location + "." + member, value[member]);
+    }
+  }
+}
+
 void merge_map(Json::Value &base, Json::Value &overlay,
                const SourceInfo &overlay_source, Context &ctx) {
   assert(base.isObject());
@@ -29,7 +51,7 @@ void merge_map(Json::Value &base, Json::Value &overlay,
   assert(std::find(overlayMembers.begin(), overlayMembers.end(), "include") ==
          overlayMembers.end());
 
-  IncludeInfo &include_info = ctx.include_map[ctx.current_location];
+  OriginInfo &origin_info = ctx.origin_map[ctx.current_location];
 
   for (const std::string &key : overlayMembers) {
     Json::Value &value = overlay[key];
@@ -45,7 +67,7 @@ void merge_map(Json::Value &base, Json::Value &overlay,
       }
     } else {
       base[key] = std::move(value);
-      include_info.included_from[key] = &overlay_source;
+      origin_info.included_from[key] = &overlay_source;
     }
   }
 }
@@ -69,17 +91,17 @@ std::pair<uint32_t, uint32_t> get_line_info(const uint8_t *data, size_t len,
 
 const SourceInfo &get_source_for_key(const Context &ctx,
                                      const std::string &key) {
-  std::map<std::string, IncludeInfo>::const_iterator iter =
-      ctx.include_map.find(ctx.current_location);
-  if (iter == ctx.include_map.end()) {
+  std::map<std::string, OriginInfo>::const_iterator iter =
+      ctx.origin_map.find(ctx.current_location);
+  if (iter == ctx.origin_map.end()) {
     return *ctx.current_source;
   }
 
-  const IncludeInfo &include_info = iter->second;
+  const OriginInfo &origin_info = iter->second;
 
   std::map<std::string, const SourceInfo *>::const_iterator include_iter =
-      include_info.included_from.find(key);
-  if (include_iter == include_info.included_from.end()) {
+      origin_info.included_from.find(key);
+  if (include_iter == origin_info.included_from.end()) {
     return *ctx.current_source;
   }
 
@@ -248,6 +270,15 @@ void resolve_includes(Context &ctx, Json::Value &value) {
   ctx.sources.push_back(std::move(source));
 
   value.removeMember("include");
+
+  // Fill in include map: only if the current source is the main file being
+  // loaded. Note that we are not doing this inside merge_map, because in
+  // merge_map we walk the included (overlay) tree, while here we walk the base
+  // tree.
+  if (ctx.current_source == &ctx.sources.front()) {
+    extract_include_info(ctx, filename, ctx.current_location, value);
+  }
+
   merge_map(value, root, ctx.sources.back(), ctx);
 }
 

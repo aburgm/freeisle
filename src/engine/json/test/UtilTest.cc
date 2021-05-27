@@ -60,7 +60,7 @@ struct AbcHandler {
 
   void load(freeisle::json::loader::Context &ctx, Json::Value &value) {
     defg_handler.set(abc.defgs);
-    load_object(ctx, "defgs", value["defgs"], defg_handler);
+    load_object(ctx, value, "defgs", defg_handler);
   }
 };
 
@@ -73,7 +73,14 @@ TEST(Util, SuperEmpty) {
   const std::string text = "{}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  freeisle::json::loader::load_root_object(data, handler);
+  ASSERT_THROW_KEEP_AS_E(
+      freeisle::json::loader::load_root_object(data, handler),
+      freeisle::json::loader::Error) {
+    EXPECT_EQ(e.path(), "");
+    EXPECT_EQ(e.message(), "Mandatory field \"defgs\" is missing");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 1);
+  }
 
   EXPECT_TRUE(abc.defgs.empty());
 }
@@ -85,9 +92,11 @@ TEST(Util, Empty) {
   const std::string text = "{\"defgs\": {}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  freeisle::json::loader::load_root_object(data, handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_TRUE(abc.defgs.empty());
+  EXPECT_TRUE(include_map.empty());
 }
 
 TEST(Util, SingleObject) {
@@ -98,13 +107,16 @@ TEST(Util, SingleObject) {
       "{\"defgs\": {\"obj1\": { \"d\": 30, \"e\": \"Enum1\" }}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  freeisle::json::loader::load_root_object(data, handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(abc.defgs.size(), 1);
   EXPECT_EQ(abc.defgs[0].d, 30);
   EXPECT_EQ(abc.defgs[0].e, Enum1);
   EXPECT_EQ(handler.defg_handler.lookup("obj1"), &abc.defgs[0]);
   EXPECT_EQ(handler.defg_handler.lookup("obj2"), nullptr);
+
+  EXPECT_TRUE(include_map.empty());
 }
 
 TEST(Util, TwoObjects) {
@@ -116,7 +128,8 @@ TEST(Util, TwoObjects) {
       "\"d\": 35, \"e\": \"Enum2\" }}}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
-  freeisle::json::loader::load_root_object(data, handler);
+  const std::map<std::string, freeisle::json::loader::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(data, handler);
 
   EXPECT_EQ(abc.defgs.size(), 2);
   EXPECT_EQ(abc.defgs[0].d, 30);
@@ -125,6 +138,26 @@ TEST(Util, TwoObjects) {
   EXPECT_EQ(abc.defgs[1].e, Enum2);
   EXPECT_EQ(handler.defg_handler.lookup("obj1"), &abc.defgs[0]);
   EXPECT_EQ(handler.defg_handler.lookup("obj2"), &abc.defgs[1]);
+
+  EXPECT_TRUE(include_map.empty());
+}
+
+TEST(Util, InvalidObjectType) {
+  Abc abc;
+  AbcHandler handler{abc};
+
+  const std::string text = "{\"defgs\": {\"obj1\": 30}}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  ASSERT_THROW_KEEP_AS_E(
+      freeisle::json::loader::load_root_object(data, handler),
+      freeisle::json::loader::Error) {
+    EXPECT_EQ(e.path(), "");
+    EXPECT_EQ(e.message(), "Expected value to be of object type");
+
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 20);
+  }
 }
 
 TEST(Util, InvalidObject) {
@@ -138,9 +171,10 @@ TEST(Util, InvalidObject) {
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(data, handler),
       freeisle::json::loader::Error) {
+    EXPECT_EQ(e.path(), "");
     EXPECT_EQ(e.message(),
               "Illegal value: \"Enum3\". Allowed values are: Enum1, Enum2");
-    EXPECT_EQ(e.path(), "");
+
     EXPECT_EQ(e.line(), 1);
     EXPECT_EQ(e.col(), 36);
   }
