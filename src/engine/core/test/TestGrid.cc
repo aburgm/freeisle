@@ -3,7 +3,9 @@
 #include <gtest/gtest.h>
 
 TEST(Grid, Default) {
-  freeisle::core::Grid<int> grid(2, 2);
+  const freeisle::core::Grid<int> grid(2, 2);
+  EXPECT_EQ(grid.width(), 2);
+  EXPECT_EQ(grid.height(), 2);
   EXPECT_EQ(grid(0, 0), 0);
   EXPECT_EQ(grid(0, 1), 0);
   EXPECT_EQ(grid(1, 0), 0);
@@ -12,6 +14,9 @@ TEST(Grid, Default) {
 
 TEST(Grid, WriteOneElement) {
   freeisle::core::Grid<int> grid(2, 2);
+  EXPECT_EQ(grid.width(), 2);
+  EXPECT_EQ(grid.height(), 2);
+
   grid(0, 1) = 3;
 
   EXPECT_EQ(grid(0, 0), 0);
@@ -22,6 +27,9 @@ TEST(Grid, WriteOneElement) {
 
 TEST(Grid, WriteAllElements) {
   freeisle::core::Grid<int> grid(2, 2);
+  EXPECT_EQ(grid.width(), 2);
+  EXPECT_EQ(grid.height(), 2);
+
   grid(0, 0) = 1;
   grid(0, 1) = 3;
   grid(1, 0) = 4;
@@ -35,6 +43,9 @@ TEST(Grid, WriteAllElements) {
 
 TEST(Grid, Rectangular) {
   freeisle::core::Grid<int> grid(3, 2);
+  EXPECT_EQ(grid.width(), 3);
+  EXPECT_EQ(grid.height(), 2);
+
   grid(0, 0) = 1;
   grid(0, 1) = 3;
   grid(1, 0) = 4;
