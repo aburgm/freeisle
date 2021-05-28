@@ -21,7 +21,7 @@ namespace {
 class MockClock : public freeisle::time::Clock {
 public:
   virtual freeisle::time::Instant get_time() override {
-    return freeisle::time::Instant::unixSec(1621371327);
+    return freeisle::time::Instant::unix_sec(1621371327);
   }
 
   virtual freeisle::time::Duration get_monotonic_time() override {
@@ -141,7 +141,7 @@ TEST_F(PngTest, DecodeCorrupt) {
       std::runtime_error);
 
   EXPECT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_.unixSec(), 1621371327);
+  EXPECT_EQ(sink.instant_.unix_sec(), 1621371327);
   EXPECT_EQ(sink.level_, freeisle::log::Level::Error);
   EXPECT_EQ(sink.domain_, "test");
 }
@@ -180,7 +180,7 @@ TEST_F(PngTest, DecodeInfoStructWarn) {
       freeisle::png::decode_rgb8(data.data(), data.size(), std::move(logger));
 
   EXPECT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_.unixSec(), 1621371327);
+  EXPECT_EQ(sink.instant_.unix_sec(), 1621371327);
   EXPECT_EQ(sink.level_, freeisle::log::Level::Warning);
   EXPECT_EQ(sink.domain_, "test");
   EXPECT_EQ(sink.message_, "Mock warning");
@@ -286,7 +286,7 @@ TEST_F(PngTest, EncodeWriteFailure) {
       std::runtime_error);
 
   EXPECT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_.unixSec(), 1621371327);
+  EXPECT_EQ(sink.instant_.unix_sec(), 1621371327);
   EXPECT_EQ(sink.level_, freeisle::log::Level::Error);
   EXPECT_EQ(sink.domain_, "test.encode");
   EXPECT_EQ(sink.message_, "Mock error");

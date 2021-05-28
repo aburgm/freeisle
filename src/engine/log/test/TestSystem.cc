@@ -9,7 +9,7 @@ namespace {
 class MockClock : public freeisle::time::Clock {
 public:
   virtual freeisle::time::Instant get_time() override {
-    return freeisle::time::Instant::unixSec(1621371327);
+    return freeisle::time::Instant::unix_sec(1621371327);
   }
 
   virtual freeisle::time::Duration get_monotonic_time() override {
@@ -47,7 +47,7 @@ TEST(System, Simple) {
   logger.log(freeisle::log::Level::Info, "my message");
 
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Info);
   EXPECT_EQ(sink.domain_, "spectacle");
   EXPECT_EQ(sink.message_, "my message");
@@ -62,7 +62,7 @@ TEST(System, Format) {
   logger.info("test message with {} goodies", 5);
 
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Info);
   EXPECT_EQ(sink.domain_, "spectacle");
   EXPECT_EQ(sink.message_, "test message with 5 goodies");
@@ -78,7 +78,7 @@ TEST(System, ChildLogger) {
   child_logger.info("test message");
 
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Info);
   EXPECT_EQ(sink.domain_, "spectacle.rock");
   EXPECT_EQ(sink.message_, "test message");
@@ -106,7 +106,7 @@ TEST(System, ThresholdConfig) {
 
   superbunny_logger.warning("test message");
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Warning);
   EXPECT_EQ(sink.domain_, "superbunny");
   EXPECT_EQ(sink.message_, "test message");
@@ -118,7 +118,7 @@ TEST(System, ThresholdConfig) {
 
   spectacle_logger.warning("test message");
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Warning);
   EXPECT_EQ(sink.domain_, "spectacle");
   EXPECT_EQ(sink.message_, "test message");
@@ -126,7 +126,7 @@ TEST(System, ThresholdConfig) {
 
   spectacle_logger.info("test message");
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Info);
   EXPECT_EQ(sink.domain_, "spectacle");
   EXPECT_EQ(sink.message_, "test message");
@@ -138,7 +138,7 @@ TEST(System, ThresholdConfig) {
 
   spectacle_mountain_logger.info("test message");
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Info);
   EXPECT_EQ(sink.domain_, "spectacle.mountain");
   EXPECT_EQ(sink.message_, "test message");
@@ -146,7 +146,7 @@ TEST(System, ThresholdConfig) {
 
   spectacle_mountain_logger.debug("test message");
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Debug);
   EXPECT_EQ(sink.domain_, "spectacle.mountain");
   EXPECT_EQ(sink.message_, "test message");
@@ -154,7 +154,7 @@ TEST(System, ThresholdConfig) {
 
   spectacle_rock_logger.fatal("test message");
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Fatal);
   EXPECT_EQ(sink.domain_, "spectacle.rock");
   EXPECT_EQ(sink.message_, "test message");
@@ -162,7 +162,7 @@ TEST(System, ThresholdConfig) {
 
   spectacle_rock_logger.error("test message");
   ASSERT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unixSec(1621371327));
+  EXPECT_EQ(sink.instant_, freeisle::time::Instant::unix_sec(1621371327));
   EXPECT_EQ(sink.level_, freeisle::log::Level::Error);
   EXPECT_EQ(sink.domain_, "spectacle.rock");
   EXPECT_EQ(sink.message_, "test message");

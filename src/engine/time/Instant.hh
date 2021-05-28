@@ -63,17 +63,17 @@ public:
   /**
    * Create an instant from a unix timestamp in seconds.
    */
-  static Instant unixSec(int64_t timestamp);
+  static Instant unix_sec(int64_t timestamp);
 
   /**
    * Create an instant from a unix timestamp in milliseconds.
    */
-  static Instant unixMsec(int64_t timestamp_ms);
+  static Instant unix_msec(int64_t timestamp_ms);
 
   /**
    * Create an instant from a unix timestamp in microseconds.
    */
-  static Instant unixUsec(int64_t timestamp_us);
+  static Instant unix_usec(int64_t timestamp_us);
 
   /**
    * Construct an instant from a Gregorian representation.
@@ -94,18 +94,18 @@ public:
    * Returns the UNIX timestamp represented by this instant, in seconds.
    * Fractional seconds are rounded toward the nearest second.
    */
-  int64_t unixSec() const;
+  int64_t unix_sec() const;
 
   /**
    * Returns the UNIX timestamp represented by this instant, in milliseconds.
    * Fractional milliseconds are rounded toward the nearest millisecond.
    */
-  int64_t unixMsec() const;
+  int64_t unix_msec() const;
 
   /**
    * Returns the UNIX timestamp represented by this instant, in microseconds.
    */
-  int64_t unixUsec() const;
+  int64_t unix_usec() const;
 
   /**
    * Break down the instant into the components of the
