@@ -4,15 +4,15 @@
 
 namespace freeisle::time {
 
-Instant Instant::unixSec(int64_t timestamp) {
+Instant Instant::unix_sec(int64_t timestamp) {
   return Instant(Duration::sec(timestamp));
 }
 
-Instant Instant::unixMsec(int64_t timestamp_ms) {
+Instant Instant::unix_msec(int64_t timestamp_ms) {
   return Instant(Duration::msec(timestamp_ms));
 }
 
-Instant Instant::unixUsec(int64_t timestamp_us) {
+Instant Instant::unix_usec(int64_t timestamp_us) {
   return Instant(Duration::usec(timestamp_us));
 }
 
@@ -63,11 +63,11 @@ Instant Instant::gregorian(int32_t year, uint32_t month, uint32_t day,
   });
 }
 
-int64_t Instant::unixSec() const { return val.sec<int64_t>(); }
+int64_t Instant::unix_sec() const { return val.sec<int64_t>(); }
 
-int64_t Instant::unixMsec() const { return val.msec<int64_t>(); }
+int64_t Instant::unix_msec() const { return val.msec<int64_t>(); }
 
-int64_t Instant::unixUsec() const { return val.usec<int64_t>(); }
+int64_t Instant::unix_usec() const { return val.usec<int64_t>(); }
 
 Instant::Gregorian Instant::break_down() const {
   struct tm tm;

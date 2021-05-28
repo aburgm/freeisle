@@ -32,7 +32,7 @@ SystemClock::SystemClock()
 
 Instant SystemClock::get_time() {
   const int64_t clockval = query_clock(CLOCK_REALTIME);
-  return Instant::unixUsec(clockval);
+  return Instant::unix_usec(clockval);
 }
 
 Duration SystemClock::get_monotonic_time() {

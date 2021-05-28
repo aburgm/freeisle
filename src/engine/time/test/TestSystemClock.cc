@@ -17,7 +17,7 @@ TEST(SystemClock, Default) {
 
   freeisle::time::SystemClock clock;
   const freeisle::time::Instant inst = clock.get_time();
-  EXPECT_EQ(inst, freeisle::time::Instant::unixSec(1621283246));
+  EXPECT_EQ(inst, freeisle::time::Instant::unix_sec(1621283246));
 
   const freeisle::time::Duration monotonic1 = clock.get_monotonic_time();
   const freeisle::time::Duration monotonic2 = clock.get_monotonic_time();

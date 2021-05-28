@@ -7,7 +7,7 @@ namespace {
 class MockClock : public freeisle::time::Clock {
 public:
   virtual freeisle::time::Instant get_time() override {
-    return freeisle::time::Instant::unixSec(0) + d;
+    return freeisle::time::Instant::unix_sec(0) + d;
   }
 
   virtual freeisle::time::Duration get_monotonic_time() override { return d; }
