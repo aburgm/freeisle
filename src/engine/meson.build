@@ -7,6 +7,5 @@ subdir('core')
 subdir('time')
 subdir('log')
 subdir('fs')
+subdir('png')
 subdir('json')
-
-# specific stuff

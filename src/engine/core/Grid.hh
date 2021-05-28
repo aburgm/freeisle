@@ -16,30 +16,33 @@ public:
    * default-initialized.
    */
   Grid(uint32_t width, uint32_t height)
-      : width(width), height(height), grid(new T[width * height]()) {}
+      : width_(width), height_(height), grid_(new T[width * height]()) {}
+
+  uint32_t width() const { return width_; }
+  uint32_t height() const { return height_; }
 
   /**
    * Access the element at the given location.
    */
   T &operator()(uint32_t x, uint32_t y) {
-    assert(x < width);
-    assert(y < height);
-    return grid[y * width + x];
+    assert(x < width_);
+    assert(y < height_);
+    return grid_[y * width_ + x];
   }
 
   /**
    * Access the element at the given location.
    */
   const T &operator()(uint32_t x, uint32_t y) const {
-    assert(x < width);
-    assert(y < height);
-    return grid[y * width + x];
+    assert(x < width_);
+    assert(y < height_);
+    return grid_[y * width_ + x];
   }
 
 private:
-  const uint32_t width;
-  const uint32_t height;
-  std::unique_ptr<T[]> grid;
+  const uint32_t width_;
+  const uint32_t height_;
+  std::unique_ptr<T[]> grid_;
 };
 
 } // namespace freeisle::core
