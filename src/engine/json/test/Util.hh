@@ -2,6 +2,8 @@
 
 #include <json/json.h>
 
+#include <fmt/format.h>
+
 #include <gtest/gtest.h>
 
 // TODO(armin): this is available in gtest post 1.10:
@@ -26,7 +28,7 @@
 namespace freeisle::json::test {
 
 inline void assert_json_equal(const Json::Value &v1, const Json::Value &v2) {
-  ASSERT_EQ(v1.type(), v2.type());
+  ASSERT_TRUE(v2.isConvertibleTo(v1.type()));
   switch (v1.type()) {
   case Json::ValueType::nullValue:
     break;
@@ -82,6 +84,16 @@ inline void assert_json_equal(const Json::Value &v1, const Json::Value &v2) {
   }
 }
 
+inline void check(const Json::Value &root, const std::string &expected) {
+  Json::Reader reader;
+  Json::Value expected_root;
+  ASSERT_TRUE(reader.parse(expected, expected_root, false))
+      << reader.getFormattedErrorMessages();
+
+  SCOPED_TRACE("Trace needs to be read bottom-up");
+  assert_json_equal(root, expected_root);
+}
+
 inline void check(const std::vector<uint8_t> result,
                   const std::string &expected) {
   Json::Reader reader;
@@ -92,12 +104,7 @@ inline void check(const std::vector<uint8_t> result,
   ASSERT_TRUE(reader.parse(begin, end, root, false))
       << reader.getFormattedErrorMessages();
 
-  Json::Value expected_root;
-  ASSERT_TRUE(reader.parse(expected, expected_root, false))
-      << reader.getFormattedErrorMessages();
-
-  SCOPED_TRACE("Trace needs to be read bottom-up");
-  assert_json_equal(root, expected_root);
+  return check(root, expected);
 }
 
 } // namespace freeisle::json::test

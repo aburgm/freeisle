@@ -1,11 +1,13 @@
 #pragma once
 
-#include "defs/DecorationDef.hh"
-#include "defs/TerrainType.hh"
+#include "def/DecorationDef.hh"
+#include "def/TerrainType.hh"
 
 #include "core/Grid.hh"
+#include "core/Sentinel.hh"
 
 #include <string>
+#include <vector>
 
 namespace freeisle::def {
 
@@ -20,30 +22,30 @@ struct MapDef {
     /**
      * The base terrain type of this hex, e.g. grass, snow, etc.
      */
-    TerrainType baseTerrain;
+    BaseTerrainType base_terrain;
 
     /**
      * The overlay terrain type of this hex. This is a terrain that
      * sits on top of the base terrain, e.g. street on top of grass,
      * forest on top of snow, street on top of water (bridge), etc.
      */
-    TerrainType overlayTerrain;
+    core::Sentinel<OverlayTerrainType, OverlayTerrainType::Num> overlay_terrain;
 
     /**
      * Decoration on this hex tile, if any.
      */
-    const DecorationDef *decoration;
+    const DecorationDef *decoration = nullptr;
   };
 
   /**
    * Loaded decorations.
    */
-  std::vector<DecorationDef> decorationDefs;
+  std::vector<DecorationDef> decoration_defs;
 
   /**
    * The main map grid.
    */
-  Grid<Hex> grid;
+  core::Grid<Hex> grid;
 };
 
 } // namespace freeisle::def

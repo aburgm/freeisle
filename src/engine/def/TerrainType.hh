@@ -10,7 +10,7 @@ namespace freeisle::def {
  * Overlay terrain is a terrain type that sits on top of the base terrain,
  * such as road or forest.
  */
-enum class TerrainType {
+enum class BaseTerrainType {
   /**
    * Grass. Base terrain.
    */
@@ -47,6 +47,13 @@ enum class TerrainType {
   Mountain,
 
   /**
+   * Total number of base terrain types.
+   */
+  Num,
+};
+
+enum class OverlayTerrainType {
+  /**
    * Forest. Overlay terrain.
    */
   Forest,
@@ -67,7 +74,7 @@ enum class TerrainType {
   Fortification,
 
   /**
-   * Total number of terrain types.
+   * Total number of overlay terrain types.
    */
   Num,
 };

@@ -4,6 +4,8 @@
 #include "log/System.hh"
 #include "time/Clock.hh"
 
+#include "log/test/util/System.hh"
+
 #include <gtest/gtest.h>
 
 extern "C" {
@@ -50,13 +52,7 @@ public:
 
 class PngTest : public ::testing::Test {
 public:
-  PngTest() : system(clock, ""), logger(system.make_logger("test", sink)) {}
-
-  MockClock clock;
-  MockSink sink;
-
-  freeisle::log::System system;
-  freeisle::log::Logger logger;
+  freeisle::log::test::System test;
 };
 
 class PngDecodeRgb8ColorTest
@@ -72,9 +68,10 @@ TEST_P(PngDecodeRgb8ColorTest, Decode) {
   const std::vector<uint8_t> data =
       freeisle::fs::read_file(GetParam(), nullptr);
   const freeisle::core::Grid<freeisle::core::color::Rgb8> image =
-      freeisle::png::decode_rgb8(data.data(), data.size(), std::move(logger));
+      freeisle::png::decode_rgb8(data.data(), data.size(),
+                                 std::move(test.logger));
 
-  EXPECT_FALSE(sink.called_);
+  EXPECT_FALSE(test.sink.called_);
 
   ASSERT_EQ(image.width(), 2);
   ASSERT_EQ(image.height(), 2);
@@ -100,9 +97,10 @@ TEST_P(PngDecodeRgb8GreyTest, Decode) {
   const std::vector<uint8_t> data =
       freeisle::fs::read_file(GetParam(), nullptr);
   const freeisle::core::Grid<freeisle::core::color::Rgb8> image =
-      freeisle::png::decode_rgb8(data.data(), data.size(), std::move(logger));
+      freeisle::png::decode_rgb8(data.data(), data.size(),
+                                 std::move(test.logger));
 
-  EXPECT_FALSE(sink.called_);
+  EXPECT_FALSE(test.sink.called_);
 
   ASSERT_EQ(image.width(), 2);
   ASSERT_EQ(image.height(), 2);
@@ -136,14 +134,14 @@ TEST_F(PngTest, DecodeCorrupt) {
   const std::vector<uint8_t> data =
       freeisle::fs::read_file("data/corrupt.png", nullptr);
 
-  EXPECT_THROW(
-      freeisle::png::decode_rgb8(data.data(), data.size(), std::move(logger)),
-      std::runtime_error);
+  EXPECT_THROW(freeisle::png::decode_rgb8(data.data(), data.size(),
+                                          std::move(test.logger)),
+               std::runtime_error);
 
-  EXPECT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_.unix_sec(), 1621371327);
-  EXPECT_EQ(sink.level_, freeisle::log::Level::Error);
-  EXPECT_EQ(sink.domain_, "test");
+  EXPECT_TRUE(test.sink.called_);
+  EXPECT_EQ(test.sink.instant_.unix_sec(), 1621371327);
+  EXPECT_EQ(test.sink.level_, freeisle::log::Level::Error);
+  EXPECT_EQ(test.sink.domain_, "test");
 }
 
 TEST_F(PngTest, DecodeReadStructOom) {
@@ -151,11 +149,11 @@ TEST_F(PngTest, DecodeReadStructOom) {
       freeisle::fs::read_file("data/rgb8.png", nullptr);
   set_create_read_struct_fail();
 
-  EXPECT_THROW(
-      freeisle::png::decode_rgb8(data.data(), data.size(), std::move(logger)),
-      std::runtime_error);
+  EXPECT_THROW(freeisle::png::decode_rgb8(data.data(), data.size(),
+                                          std::move(test.logger)),
+               std::runtime_error);
 
-  EXPECT_FALSE(sink.called_);
+  EXPECT_FALSE(test.sink.called_);
 }
 
 TEST_F(PngTest, DecodeInfoStructOom) {
@@ -163,11 +161,11 @@ TEST_F(PngTest, DecodeInfoStructOom) {
       freeisle::fs::read_file("data/rgb8.png", nullptr);
   set_create_info_struct_fail();
 
-  EXPECT_THROW(
-      freeisle::png::decode_rgb8(data.data(), data.size(), std::move(logger)),
-      std::runtime_error);
+  EXPECT_THROW(freeisle::png::decode_rgb8(data.data(), data.size(),
+                                          std::move(test.logger)),
+               std::runtime_error);
 
-  EXPECT_FALSE(sink.called_);
+  EXPECT_FALSE(test.sink.called_);
 }
 
 TEST_F(PngTest, DecodeInfoStructWarn) {
@@ -177,13 +175,14 @@ TEST_F(PngTest, DecodeInfoStructWarn) {
   set_create_info_struct_warn();
 
   const freeisle::core::Grid<freeisle::core::color::Rgb8> image =
-      freeisle::png::decode_rgb8(data.data(), data.size(), std::move(logger));
+      freeisle::png::decode_rgb8(data.data(), data.size(),
+                                 std::move(test.logger));
 
-  EXPECT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_.unix_sec(), 1621371327);
-  EXPECT_EQ(sink.level_, freeisle::log::Level::Warning);
-  EXPECT_EQ(sink.domain_, "test");
-  EXPECT_EQ(sink.message_, "Mock warning");
+  EXPECT_TRUE(test.sink.called_);
+  EXPECT_EQ(test.sink.instant_.unix_sec(), 1621371327);
+  EXPECT_EQ(test.sink.level_, freeisle::log::Level::Warning);
+  EXPECT_EQ(test.sink.domain_, "test");
+  EXPECT_EQ(test.sink.message_, "Mock warning");
 
   ASSERT_EQ(image.width(), 2);
   ASSERT_EQ(image.height(), 2);
@@ -212,13 +211,13 @@ TEST_F(PngTest, Encode) {
   image(0, 1) = freeisle::core::color::Rgb8{127, 127, 0};
   image(1, 1) = freeisle::core::color::Rgb8{255, 0, 127};
 
-  const std::vector<uint8_t> encoded =
-      freeisle::png::encode_rgb8(image, logger.make_child_logger("encode"));
+  const std::vector<uint8_t> encoded = freeisle::png::encode_rgb8(
+      image, test.logger.make_child_logger("encode"));
   const freeisle::core::Grid<freeisle::core::color::Rgb8> decoded =
       freeisle::png::decode_rgb8(encoded.data(), encoded.size(),
-                                 logger.make_child_logger("decode"));
+                                 test.logger.make_child_logger("decode"));
 
-  EXPECT_FALSE(sink.called_);
+  EXPECT_FALSE(test.sink.called_);
 
   ASSERT_EQ(decoded.width(), 2);
   ASSERT_EQ(decoded.height(), 2);
@@ -249,11 +248,11 @@ TEST_F(PngTest, EncodeWriteStructOom) {
 
   set_create_write_struct_fail();
 
-  EXPECT_THROW(
-      freeisle::png::encode_rgb8(image, logger.make_child_logger("encode")),
-      std::runtime_error);
+  EXPECT_THROW(freeisle::png::encode_rgb8(
+                   image, test.logger.make_child_logger("encode")),
+               std::runtime_error);
 
-  EXPECT_FALSE(sink.called_);
+  EXPECT_FALSE(test.sink.called_);
 }
 
 TEST_F(PngTest, EncodeInfoStructOom) {
@@ -265,11 +264,11 @@ TEST_F(PngTest, EncodeInfoStructOom) {
 
   set_create_info_struct_fail();
 
-  EXPECT_THROW(
-      freeisle::png::encode_rgb8(image, logger.make_child_logger("encode")),
-      std::runtime_error);
+  EXPECT_THROW(freeisle::png::encode_rgb8(
+                   image, test.logger.make_child_logger("encode")),
+               std::runtime_error);
 
-  EXPECT_FALSE(sink.called_);
+  EXPECT_FALSE(test.sink.called_);
 }
 
 TEST_F(PngTest, EncodeWriteFailure) {
@@ -281,13 +280,13 @@ TEST_F(PngTest, EncodeWriteFailure) {
 
   set_write_info_fail();
 
-  EXPECT_THROW(
-      freeisle::png::encode_rgb8(image, logger.make_child_logger("encode")),
-      std::runtime_error);
+  EXPECT_THROW(freeisle::png::encode_rgb8(
+                   image, test.logger.make_child_logger("encode")),
+               std::runtime_error);
 
-  EXPECT_TRUE(sink.called_);
-  EXPECT_EQ(sink.instant_.unix_sec(), 1621371327);
-  EXPECT_EQ(sink.level_, freeisle::log::Level::Error);
-  EXPECT_EQ(sink.domain_, "test.encode");
-  EXPECT_EQ(sink.message_, "Mock error");
+  EXPECT_TRUE(test.sink.called_);
+  EXPECT_EQ(test.sink.instant_.unix_sec(), 1621371327);
+  EXPECT_EQ(test.sink.level_, freeisle::log::Level::Error);
+  EXPECT_EQ(test.sink.domain_, "test.encode");
+  EXPECT_EQ(test.sink.message_, "Mock error");
 }

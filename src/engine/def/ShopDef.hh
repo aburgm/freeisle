@@ -1,8 +1,8 @@
 #pragma once
 
-#include "defs/ContainerDef.hh"
-#include "defs/Location.hh"
-#include "defs/UnitDef.hh"
+#include "def/ContainerDef.hh"
+#include "def/Location.hh"
+#include "def/UnitDef.hh"
 
 #include <string>
 

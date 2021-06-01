@@ -19,6 +19,11 @@ struct Context {
   Context &operator=(Context &&) = default;
 
   /**
+   * Path in the filesystem at which the document is being saved.
+   */
+  const std::string path;
+
+  /**
    * Location in the object tree in the form ".a.b.c" where the object
    * currently being saved is located.
    */
@@ -78,6 +83,7 @@ save_root_object(THandler &handler,
   }
 
   Context ctx{
+      .path = "",
       .current_location = "",
       .include_map = *include_map,
   };
@@ -98,8 +104,25 @@ save_root_object(THandler &handler,
 template <typename THandler>
 void save_root_object(const char *path, THandler &handler,
                       const std::map<std::string, IncludeInfo> *include_map) {
-  const std::vector<uint8_t> json = save_root_object(handler, include_map);
-  fs::write_file(path, json.data(), json.size(), nullptr);
+  const std::map<std::string, IncludeInfo> empty_include_map;
+  if (include_map == nullptr) {
+    include_map = &empty_include_map;
+  }
+
+  Context ctx{
+      .path = path,
+      .current_location = "",
+      .include_map = *include_map,
+  };
+
+  Json::Value root;
+  handler.save(ctx, root);
+  restore_includes(ctx, root);
+
+  Json::StyledWriter writer;
+  const std::string str = writer.write(root);
+  fs::write_file(path, reinterpret_cast<const uint8_t *>(str.data()),
+                 str.size(), nullptr);
 }
 
 } // namespace freeisle::json::saver

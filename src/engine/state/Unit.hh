@@ -2,8 +2,11 @@
 
 #include "state/Container.hh"
 #include "state/Player.hh"
-#include "state/Ptr.hh"
 #include "state/Shop.hh"
+
+#include "def/UnitDef.hh"
+
+#include "core/Ptr.hh"
 
 namespace freeisle::state {
 
@@ -35,17 +38,17 @@ struct Unit {
   /**
    * Unit definition with all static unit information.
    */
-  const UnitDef *def;
+  const def::UnitDef *def;
 
   /**
    * Player who controls this unit.
    */
-  Ptr<Player> owner;
+  core::Ptr<Player> owner;
 
   /**
    * Current location of the unit on the map.
    */
-  Location location;
+  def::Location location;
 
   /**
    * Health of the unit. 100 is full health, and 0 means the unit is destroyed
@@ -57,7 +60,7 @@ struct Unit {
    * Level of the unit. Typically the same as def->level, except the unit
    * is soared.
    */
-  Level level;
+  def::Level level;
 
   /**
    * Movement points the unit has left during this turn.
@@ -94,7 +97,7 @@ struct Unit {
   /**
    * Supplies that this unit has left to supply other units with.
    */
-  Resupply supplies;
+  def::Resupply supplies;
 
   /**
    * Ammo the weapon systems of this unit have left. One entry in the vector
@@ -110,12 +113,12 @@ struct Unit {
   /**
    * Pointer to the unit that is transporting this unit, if any.
    */
-  Ptr<Unit> containedInUnit;
+  core::Ptr<Unit> containedInUnit;
 
   /**
    * Pointer to the shop that this unit is inside, if any.
    */
-  Ptr<Shop> containedInShop;
+  core::Ptr<Shop> containedInShop;
 };
 
 } // namespace freeisle::state

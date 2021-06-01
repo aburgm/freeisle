@@ -10,3 +10,6 @@ subdir('log')
 subdir('fs')
 subdir('png')
 subdir('json')
+
+# specific stuff
+subdir('state')

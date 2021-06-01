@@ -13,6 +13,50 @@ namespace freeisle::json::loader {
 
 namespace {
 
+Json::Value read_json_document(const std::vector<uint8_t> &data) {
+  Json::Reader reader;
+  const char *begin = reinterpret_cast<const char *>(&data.data()[0]);
+  const char *end = begin + data.size();
+
+  Json::Value root;
+  if (!reader.parse(begin, end, root, false)) {
+    throw std::runtime_error(reader.getFormattedErrorMessages());
+  }
+
+  return root;
+}
+
+std::pair<Context, Json::Value>
+make_context(std::vector<uint8_t> data, const char *path, fs::FileId file_id) {
+  std::vector<std::string> search_paths;
+  if (path == nullptr) {
+    path = "";
+    // not adding any search paths automatically disables all include resolution
+  } else {
+    search_paths.push_back(fs::path::dirname(path));
+  }
+
+  SourceInfo source{
+      .filename = path,
+      .path = path,
+      .id = file_id,
+      .level = 0,
+      .origin = nullptr,
+      .source_data = std::move(data),
+  };
+
+  Context ctx{
+      .search_paths = search_paths,
+      .sources = {std::move(source)},
+      .current_location = "",
+  };
+
+  ctx.current_source = &ctx.sources.back();
+
+  Json::Value root = read_json_document(ctx.sources.back().source_data);
+  return {std::move(ctx), root};
+}
+
 void extract_include_info(Context &ctx, const std::string &filename,
                           const std::string &location,
                           const Json::Value &value) {
@@ -106,19 +150,6 @@ const SourceInfo &get_source_for_key(const Context &ctx,
   }
 
   return *include_iter->second;
-}
-
-Json::Value read_json_document(const std::vector<uint8_t> &data) {
-  Json::Reader reader;
-  const char *begin = reinterpret_cast<const char *>(&data.data()[0]);
-  const char *end = begin + data.size();
-
-  Json::Value root;
-  if (!reader.parse(begin, end, root, false)) {
-    throw std::runtime_error(reader.getFormattedErrorMessages());
-  }
-
-  return root;
 }
 
 } // namespace
@@ -283,26 +314,8 @@ void resolve_includes(Context &ctx, Json::Value &value) {
 }
 
 std::pair<Context, Json::Value>
-make_root_source_context(std::vector<uint8_t> data) {
-  SourceInfo source{
-      .filename = "",
-      .path = "",
-      .id = fs::FileId{},
-      .level = 0,
-      .origin = nullptr,
-      .source_data = std::move(data),
-  };
-
-  Context ctx{
-      .search_paths = {}, // this automatically disables all include resolution
-      .sources = {std::move(source)},
-      .current_location = "",
-  };
-
-  ctx.current_source = &ctx.sources.back();
-
-  Json::Value root = read_json_document(ctx.sources.back().source_data);
-  return {std::move(ctx), root};
+make_root_source_context(std::vector<uint8_t> data, const char *path) {
+  return make_context(std::move(data), path, fs::FileId{});
 }
 
 std::pair<Context, Json::Value> make_root_file_context(const char *path) {
@@ -311,25 +324,7 @@ std::pair<Context, Json::Value> make_root_file_context(const char *path) {
   std::vector<uint8_t> data(file.info().size);
   fs::read_all(file, data.data(), data.size());
 
-  SourceInfo source{
-      .filename = path,
-      .path = path,
-      .id = file.info().id,
-      .level = 0,
-      .origin = nullptr,
-      .source_data = std::move(data),
-  };
-
-  Context ctx{
-      .search_paths = {fs::path::dirname(path)},
-      .sources = {std::move(source)},
-      .current_location = "",
-  };
-
-  ctx.current_source = &ctx.sources.back();
-
-  Json::Value root = read_json_document(ctx.sources.back().source_data);
-  return {std::move(ctx), root};
+  return make_context(std::move(data), path, file.info().id);
 };
 
 } // namespace freeisle::json::loader

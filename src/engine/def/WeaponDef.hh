@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defs/DamageType.hh"
+#include "def/DamageType.hh"
 
 #include <string>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defs/DamageType.hh"
+#include "def/DamageType.hh"
 
 namespace freeisle::def {
 
@@ -22,7 +22,7 @@ struct Resupply {
   /**
    * Ammo resupply for the various damage types.
    */
-  uint32_t ammo[DamageType::Max];
+  uint32_t ammo[static_cast<uint32_t>(DamageType::Num)];
 };
 
 } // namespace freeisle::def

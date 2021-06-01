@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defs/Level.hh"
+#include "def/Level.hh"
 
 #include "core/Bitmask.hh"
 
@@ -27,7 +27,7 @@ struct ContainerDef {
    * Constraints the container to units at the specified level, e.g.
    * a container for land units only.
    */
-  Bitmask<Level> supportedLevels;
+  core::Bitmask<Level> supportedLevels;
 };
 
 } // namespace freeisle::def

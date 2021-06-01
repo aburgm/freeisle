@@ -185,3 +185,21 @@ TEST(Base64, DecodeShortUnpadded) {
   const uint8_t in[5] = {'Z', '9', 'm', 'v', 'Y'};
   EXPECT_THROW(freeisle::base64::decode(in, 5, out), std::invalid_argument);
 }
+
+TEST(Base64, Encode_above128) {
+  uint8_t out[8];
+  uint8_t in[4] = {137, 80, 78, 71};
+  EXPECT_EQ(freeisle::base64::encode(in, sizeof(in), out), 8);
+  EXPECT_EQ(std::string(out, out + 8), "iVBORw==");
+}
+
+TEST(Base64, Decode_above128) {
+  uint8_t out[4];
+  const uint8_t in[8] = {'i', 'V', 'B', 'O', 'R', 'w', '=', '='};
+  ASSERT_EQ(freeisle::base64::decode(in, 8, out), 4);
+
+  EXPECT_EQ(out[0], 137);
+  EXPECT_EQ(out[1], 80);
+  EXPECT_EQ(out[2], 78);
+  EXPECT_EQ(out[3], 71);
+}
