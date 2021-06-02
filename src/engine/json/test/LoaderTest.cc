@@ -3,26 +3,9 @@
 
 #include "fs/Path.hh"
 
-#include <gtest/gtest.h>
+#include "core/test/util/Util.hh"
 
-// TODO(armin): this is available in gtest post 1.10:
-#define ASSERT_THROW_KEEP_AS_E(statement, expected_exception)                  \
-  std::exception_ptr _exceptionPtr;                                            \
-  try {                                                                        \
-    (statement);                                                               \
-    FAIL() << "Expected: " #statement                                          \
-              " throws an exception of type " #expected_exception              \
-              ".\n  Actual: it throws nothing.";                               \
-  } catch (expected_exception const &) {                                       \
-    _exceptionPtr = std::current_exception();                                  \
-  } catch (...) {                                                              \
-    FAIL() << "Expected: " #statement                                          \
-              " throws an exception of type " #expected_exception              \
-              ".\n  Actual: it throws a different type.";                      \
-  }                                                                            \
-  try {                                                                        \
-    std::rethrow_exception(_exceptionPtr);                                     \
-  } catch (expected_exception const &e)
+#include <gtest/gtest.h>
 
 namespace {
 
@@ -79,6 +62,14 @@ struct AbcHandler {
     abc.b = freeisle::json::loader::load<uint32_t>(ctx, value, "b");
     load_object(ctx, value, "c", defg_handler);
   }
+};
+
+struct BinaryHandler {
+  void load(freeisle::json::loader::Context &ctx, Json::Value &value) {
+    data = freeisle::json::loader::load_binary(ctx, value, "data");
+  }
+
+  std::vector<uint8_t> data;
 };
 
 } // namespace
@@ -733,5 +724,67 @@ TEST(Loader, CustomErrorInheritedFromSublevelInclude) {
     EXPECT_EQ(e.line(), 6);
     EXPECT_EQ(e.col(), 10);
     EXPECT_EQ(e.message(), "e cannot be false");
+  }
+}
+
+TEST(Loader, BinaryInline) {
+  BinaryHandler handler;
+
+  const std::string text = "{\"data\": \"8HoBMQ==\"}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object(data, handler);
+
+  EXPECT_EQ(handler.data.size(), 4);
+  EXPECT_EQ(handler.data[0], 240);
+  EXPECT_EQ(handler.data[1], 122);
+  EXPECT_EQ(handler.data[2], 1);
+  EXPECT_EQ(handler.data[3], 49);
+
+  EXPECT_TRUE(include_map.empty());
+}
+
+TEST(Loader, BinaryExternal) {
+  BinaryHandler handler;
+
+  const std::map<std::string, freeisle::json::IncludeInfo> include_map =
+      freeisle::json::loader::load_root_object("data/binary.json", handler);
+
+  EXPECT_EQ(handler.data.size(), 4);
+  EXPECT_EQ(handler.data[0], 240);
+  EXPECT_EQ(handler.data[1], 122);
+  EXPECT_EQ(handler.data[2], 1);
+  EXPECT_EQ(handler.data[3], 49);
+
+  EXPECT_TRUE(include_map.empty());
+}
+
+TEST(Loader, BinaryExternalErrorAbsolute) {
+  BinaryHandler handler;
+
+  ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(
+                             "data/binary_error_absolute.json", handler),
+                         freeisle::json::loader::Error) {
+    EXPECT_EQ(freeisle::fs::path::basename(e.path()),
+              "binary_error_absolute.json");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 10);
+    EXPECT_EQ(e.message(), "Path must not be absolute");
+  }
+}
+
+TEST(Loader, BinaryExternalErrorNonexisting) {
+  BinaryHandler handler;
+
+  ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(
+                             "data/binary_error_nonexisting.json", handler),
+                         freeisle::json::loader::Error) {
+    EXPECT_EQ(freeisle::fs::path::basename(e.path()),
+              "binary_error_nonexisting.json");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 10);
+    EXPECT_EQ(e.message(), "Failed to open file \"data/data_nonexisting.bin\": "
+                           "No such file or directory");
   }
 }

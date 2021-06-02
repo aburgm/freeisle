@@ -3,10 +3,8 @@
 #include "json/LoadUtil.hh"
 #include "json/SaveUtil.hh"
 
-#include "fs/Path.hh"
 #include "log/Logger.hh"
 
-#include "base64/Base64.hh"
 #include "png/Png.hh"
 
 namespace freeisle::state::serialize {
@@ -83,32 +81,11 @@ void MapDefLoader::load(json::loader::Context &ctx, Json::Value &value) {
   DecorationDefContainerLoader decorations_loader(map_.decoration_defs, aux_);
   json::loader::load_object(ctx, value, "decorations", decorations_loader);
 
-  const std::string map = json::loader::load<std::string>(ctx, value, "grid");
+  const std::vector<uint8_t> png_data =
+      json::loader::load_binary(ctx, value, "grid");
 
   core::Grid<core::color::Rgb8> image_data;
-
   try {
-    std::vector<uint8_t> png_data;
-    if (ctx.current_source->path.empty()) {
-      // Decode from base64:
-      png_data.resize((map.length() * 3 + 3) / 4);
-      uint64_t len =
-          base64::decode(reinterpret_cast<const uint8_t *>(map.data()),
-                         map.length(), png_data.data());
-      png_data.resize(len);
-    } else {
-      // Load from file:
-      const std::string resolved = fs::path::resolve(map);
-      if (fs::path::is_absolute(resolved)) {
-        throw json::loader::Error::create(ctx, "grid", value["grid"],
-                                          "Map path must not be absolute");
-      }
-
-      const std::string full_path =
-          fs::path::join(fs::path::dirname(ctx.current_source->path), resolved);
-      png_data = fs::read_file(full_path.c_str(), nullptr);
-    }
-
     image_data = png::decode_rgb8(png_data.data(), png_data.size(),
                                   aux_.logger.make_child_logger("png-decode"));
   } catch (const std::exception &ex) {
@@ -206,21 +183,8 @@ void MapDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   std::vector<uint8_t> png_data =
       png::encode_rgb8(image_data, aux_.logger.make_child_logger("png-encode"));
 
-  if (!ctx.path.empty()) {
-    const std::string png_path =
-        fs::path::join(fs::path::dirname(ctx.path), "map.png");
-    fs::write_file(png_path.c_str(), png_data.data(), png_data.size(), nullptr);
-    json::saver::save(
-        ctx, value, "grid",
-        fs::path::make_relative(png_path, fs::path::dirname(ctx.path)));
-  } else {
-    std::string base64_encoded;
-    base64_encoded.resize(
-        base64::round_to_next_multiple_of<4>(png_data.size() * 4 / 3));
-    base64::encode(png_data.data(), png_data.size(),
-                   reinterpret_cast<uint8_t *>(&base64_encoded[0]));
-    json::saver::save(ctx, value, "grid", base64_encoded);
-  }
+  json::saver::save_binary(ctx, value, "grid", png_data.data(), png_data.size(),
+                           "map.png");
 }
 
 } // namespace freeisle::state::serialize

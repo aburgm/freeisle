@@ -32,6 +32,15 @@ void save_enum(Context &ctx, Json::Value &value, const char *key, T val,
 }
 
 /**
+ * Save a byte sequence. If the context has a file reference set, it will
+ * be saved as an extra file with the given filename, and the relative path
+ * to the file is stored in the JSON document. Otherwise, the binary data
+ * is base64-encoded and saved in the JSON document directly.
+ */
+void save_binary(Context &ctx, Json::Value &value, const char *key,
+                 const uint8_t *data, size_t len, const char *filename);
+
+/**
  * Save an object handled by the given handler under the given key in the
  * value provided. Handles include reference restoration.
  */

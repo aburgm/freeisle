@@ -1,7 +1,6 @@
 #include "state/serialize/MapDefHandlers.hh"
 
 #include "base64/Base64.hh"
-#include "core/String.hh"
 #include "fs/Path.hh"
 #include "log/Sink.hh"
 #include "log/System.hh"
@@ -239,8 +238,7 @@ TEST_F(TestMapDefHandlers, LoadAbsolutePath) {
       freeisle::json::loader::make_root_source_context(data, source.c_str());
   ASSERT_THROW_KEEP_AS_E(loader.load(pair.first, pair.second),
                          freeisle::json::loader::Error) {
-    EXPECT_TRUE(freeisle::core::string::has_suffix(
-        e.message(), ": Map path must not be absolute"));
+    EXPECT_EQ(e.message(), "Path must not be absolute");
     EXPECT_EQ(e.line(), 1);
     EXPECT_EQ(e.col(), 70);
     EXPECT_EQ(e.path(), source);
