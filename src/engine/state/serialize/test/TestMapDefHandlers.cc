@@ -145,6 +145,25 @@ TEST_F(TestMapDefHandlers, LoadVarying4x4) {
   EXPECT_EQ(map.grid(2, 1).decoration, &map.decoration_defs[1]);
 }
 
+TEST_F(TestMapDefHandlers, LoadCorruptPNG) {
+  const std::string to_be_loaded =
+      "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
+      "\"grid\": "
+      "\"TAO2Rw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
+      "GmLdqcAAAAAElFTkSuQmCC\"}";
+  const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
+
+  freeisle::def::MapDef map;
+  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(data, loader),
+                         freeisle::json::loader::Error) {
+    EXPECT_EQ(e.message(), "Not a PNG file");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 70);
+    EXPECT_EQ(e.path(), "");
+  }
+}
+
 TEST_F(TestMapDefHandlers, LoadUndefinedIndex) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}, "
