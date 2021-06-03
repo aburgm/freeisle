@@ -51,6 +51,15 @@ struct AbcHandler {
   }
 };
 
+struct BinaryHandler {
+  void save(freeisle::json::saver::Context &ctx, Json::Value &value) {
+    freeisle::json::saver::save_binary(ctx, value, "data", data.data(),
+                                       data.size(), "data.bin");
+  }
+
+  std::vector<uint8_t> data;
+};
+
 class SaverFileTest : public freeisle::fs::test::TempDirFixture {};
 
 } // namespace
@@ -277,4 +286,32 @@ TEST(Saver, CompositeWithFixedErrorFromMultilevelInclude) {
       "{ \"include\": \"abc_custom_error.json\", \"a\": \"hi\", \"c\": { "
       "\"include\": \"defg_working.json\"}}";
   freeisle::json::test::check(result, expected);
+}
+
+TEST(Saver, BinaryInline) {
+  BinaryHandler handler{.data = {240, 122, 1, 49}};
+
+  const std::vector<uint8_t> result =
+      freeisle::json::saver::save_root_object(handler, nullptr);
+
+  const std::string expected = "{\"data\": \"8HoBMQ==\"}";
+  freeisle::json::test::check(result, expected);
+}
+
+TEST(Saver, BinaryExternal) {
+  BinaryHandler handler{.data = {240, 122, 1, 49}};
+
+  freeisle::json::saver::save_root_object("test.json", handler, nullptr);
+  const std::vector<uint8_t> result =
+      freeisle::fs::read_file("test.json", nullptr);
+
+  const std::string expected = "{\"data\": \"data.bin\"}";
+  freeisle::json::test::check(result, expected);
+
+  std::vector<uint8_t> data = freeisle::fs::read_file("data.bin", nullptr);
+  EXPECT_EQ(data.size(), 4);
+  EXPECT_EQ(data[0], 240);
+  EXPECT_EQ(data[1], 122);
+  EXPECT_EQ(data[2], 1);
+  EXPECT_EQ(data[3], 49);
 }

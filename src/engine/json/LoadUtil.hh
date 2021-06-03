@@ -69,6 +69,15 @@ T load_enum(Context &ctx, Json::Value &value, const char *key,
 }
 
 /**
+ * Load a byte sequence from the given key in an object value. If the context
+ * has a file reference, the content of the value in the JSON document is
+ * expected to be a reference to a file with the binary content, otherwise it
+ * is interpreted as base64-encoded binary data.
+ */
+std::vector<uint8_t> load_binary(Context &ctx, Json::Value &value,
+                                 const char *key);
+
+/**
  * Load an object from a JSON object. The given handler is responsible for
  * loading the fields of the object from the JSON object. This function handles
  * include references and keeps tracking the tree walking in the context.
