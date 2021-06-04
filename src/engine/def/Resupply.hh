@@ -2,6 +2,8 @@
 
 #include "def/DamageType.hh"
 
+#include "core/EnumMap.hh"
+
 namespace freeisle::def {
 
 /**
@@ -22,7 +24,7 @@ struct Resupply {
   /**
    * Ammo resupply for the various damage types.
    */
-  uint32_t ammo[static_cast<uint32_t>(DamageType::Num)];
+  core::EnumMap<uint32_t, DamageType> ammo;
 };
 
 } // namespace freeisle::def

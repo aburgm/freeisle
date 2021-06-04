@@ -2,9 +2,12 @@
 
 #include "def/ContainerDef.hh"
 #include "def/Resupply.hh"
+#include "def/TerrainType.hh"
 #include "def/WeaponDef.hh"
 
 #include "core/Bitmask.hh"
+#include "core/Enum.hh"
+#include "core/EnumMap.hh"
 
 #include <string>
 
@@ -88,6 +91,12 @@ struct UnitDef {
   uint32_t fuel;
 
   /**
+   * Weight of the unit. Weight limits transport of this unit in other
+   * units that can contain units.
+   */
+  uint32_t weight;
+
+  /**
    * Cost for the unit to move on a hex of each type. If both base and
    * overlay terrain specified, the overlay counts, except the unit's level
    * does not apply to the overlay terrain, e.g. a unit with water level on
@@ -97,8 +106,7 @@ struct UnitDef {
    * Default movement cost is 100, but can be lower to move faster over the
    * given terrain, or can be higher to move slower.
    */
-  uint32_t movement_cost[static_cast<uint32_t>(BaseTerrainType::Num) +
-                         static_cast<uint32_t>(OverlayTerrainType::Num)];
+  core::EnumMap<uint32_t, BaseTerrainType, OverlayTerrainType> movement_cost;
 
   /**
    * Extra protection of the unit on each terrain. Standard protection is 100.
@@ -109,15 +117,14 @@ struct UnitDef {
    * is taken, except when the unit's level doesn't apply to the overlay
    * terrain.
    */
-  uint32_t protection[static_cast<uint32_t>(BaseTerrainType::Num) +
-                      static_cast<uint32_t>(OverlayTerrainType::Num)];
+  core::EnumMap<uint32_t, BaseTerrainType, OverlayTerrainType> protection;
 
   /**
    * Resistance and vulnerability of the unit to each damage type. Default
    * resistance is 100, with values less than than indicating a vulnerability
    * to the type of damage, and values greater than 100 indicate resistance.
    */
-  uint32_t resistance[static_cast<uint32_t>(DamageType::Num)];
+  core::EnumMap<uint32_t, DamageType> resistance;
 
   /**
    * Supplies that this unit can supply other units with.
@@ -151,6 +158,13 @@ struct UnitDef {
    * enemy units.
    */
   uint32_t jamming_range;
+};
+
+constexpr core::EnumEntry<UnitDef::Cap> UnitDefCaps[] = {
+    {UnitDef::Cap::Capture, "capture"},
+    {UnitDef::Cap::Soar, "soar"},
+    {UnitDef::Cap::NoActionAfterMove, "no_action_after_move"},
+    {UnitDef::Cap::MoveAfterAction, "move_after_action"},
 };
 
 } // namespace freeisle::def

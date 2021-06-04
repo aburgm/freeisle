@@ -28,6 +28,14 @@ public:
   /**
    * Computes the bitwise OR between two bitmasks.
    */
+  Bitmask<T> &operator|=(Bitmask<T> other) {
+    val |= other.val;
+    return *this;
+  }
+
+  /**
+   * Computes the bitwise OR between two bitmasks.
+   */
   Bitmask<T> operator|(Bitmask<T> other) const {
     return Bitmask<T>(val | other.val);
   }

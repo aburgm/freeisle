@@ -2,7 +2,9 @@
 
 #include "json/Loader.hh"
 
+#include "core/Bitmask.hh"
 #include "core/Enum.hh"
+#include "core/EnumMap.hh"
 #include "core/String.hh"
 
 #include <fmt/format.h>
@@ -66,6 +68,55 @@ T load_enum(Context &ctx, Json::Value &value, const char *key,
   }
 
   return *val;
+}
+
+/**
+ * Load a bitmask of enum values from the given key in the JSON file. The
+ * format should be an array with one entry per bit set.
+ */
+template <typename T, uint32_t N>
+core::Bitmask<T> load_bitmask(Context &ctx, Json::Value &value, const char *key,
+                              const core::EnumEntry<T> (&entries)[N]) {
+  const Json::Value &val = value[key];
+  if (val.isNull()) {
+    throw Error::create(ctx, "", value,
+                        fmt::format("Mandatory field \"{}\" is missing", key));
+  }
+
+  if (!val.isArray()) {
+    throw Error::create(ctx, key, val,
+                        fmt::format("Field \"{}\" is not of array type", key));
+  }
+
+  core::Bitmask<T> result;
+  for (uint32_t i = 0; i < val.size(); ++i) {
+    std::string str;
+
+    try {
+      str = as<std::string>(val[i]);
+    } catch (const Json::Exception &ex) {
+      throw Error::create(ctx, key, val[i], ex.what());
+    }
+
+    const T *e = freeisle::core::from_string(entries, str.c_str());
+    if (e == nullptr) {
+      const char *allowed[N];
+      std::transform(std::begin(entries), std::end(entries),
+                     std::begin(allowed),
+                     [](const core::EnumEntry<T> &t) { return t.str; });
+
+      std::string message = fmt::format(
+          "Illegal value: \"{}\". Allowed values are: {}", str,
+          core::string::join(std::begin(allowed), std::end(allowed), ", "));
+
+      throw freeisle::json::loader::Error::create(ctx, key, val[i],
+                                                  std::move(message));
+    }
+
+    result |= *e;
+  }
+
+  return result;
 }
 
 /**
@@ -188,6 +239,60 @@ private:
    * containers are modified between loading and saving.
    */
   std::map<const void *, std::string> *object_ids_;
+};
+
+/**
+ * Loads an array of values of type T where each entry in the array
+ * has an assigned name. The array is expected to be of object type, where
+ * each key corresponds to the name of one of the array elements.
+ */
+template <typename T> class NamedArrayLoader {
+public:
+  /**
+   * @param arr Pointer to the array where the values should be loaded into.
+   * @param size Number of elements in the array.
+   * @param names Names assigned to each array element. This names array
+   *              should also have a length of the given size.
+   */
+  NamedArrayLoader(T *arr, size_t size, const char *const *names)
+      : arr_(arr), size_(size), names_(names) {}
+
+  /**
+   * Load the enum array from given value of type object.
+   */
+  void load(Context &ctx, Json::Value &value) {
+    for (size_t i = 0; i < size_; ++i) {
+      arr_[i] = json::loader::load<T>(ctx, value, names_[i]);
+    }
+  }
+
+private:
+  T *arr_;
+  const size_t size_;
+  const char *const *const names_;
+};
+
+/**
+ * Load an enum map as a named array (see NamedArrayLoader).
+ */
+template <typename T, typename... Enums> class EnumMapLoader {
+public:
+  /**
+   * @param map The map to be loaded.
+   * @param names Names assigned to each enum value. This can be generated
+   *              with freeisle::core::get_enum_names().
+   */
+  EnumMapLoader(core::EnumMap<T, Enums...> &map,
+                const core::EnumMap<const char *, Enums...> &names)
+      : underlying(map.data(), map.size(), names.data()) {}
+
+  /**
+   * Load the enum array from the given value of type object.
+   */
+  void load(Context &ctx, Json::Value &value) { underlying.load(ctx, value); }
+
+private:
+  NamedArrayLoader<T> underlying;
 };
 
 } // namespace freeisle::json::loader

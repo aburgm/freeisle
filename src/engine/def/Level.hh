@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Enum.hh"
+
 namespace freeisle::def {
 
 /**
@@ -30,6 +32,14 @@ enum class Level {
    * High air, e.g. reconnaisance aircraft.
    */
   HighAir = 0x04,
+};
+
+constexpr core::EnumEntry<Level> Levels[] = {
+    {Level::UnderWater, "under_water"},
+    {Level::Water, "water"},
+    {Level::Land, "land"},
+    {Level::Air, "air"},
+    {Level::HighAir, "high_air"},
 };
 
 } // namespace freeisle::def

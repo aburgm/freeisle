@@ -102,3 +102,26 @@ TEST(Bitmask, ToggleBits) {
   EXPECT_FALSE(mask.are_any_set());
   EXPECT_EQ(mask.n_set(), 0);
 }
+
+TEST(Bitmask, BitwiseOrAssignment) {
+  freeisle::core::Bitmask<TestEnum> mask{};
+  EXPECT_FALSE(mask.is_set(TestEnum::Test1));
+  EXPECT_FALSE(mask.is_set(TestEnum::Test2));
+  EXPECT_FALSE(mask.is_set(TestEnum::Test3));
+  EXPECT_FALSE(mask.are_any_set());
+  EXPECT_EQ(mask.n_set(), 0);
+
+  mask |= TestEnum::Test2;
+  EXPECT_FALSE(mask.is_set(TestEnum::Test1));
+  EXPECT_TRUE(mask.is_set(TestEnum::Test2));
+  EXPECT_FALSE(mask.is_set(TestEnum::Test3));
+  EXPECT_TRUE(mask.are_any_set());
+  EXPECT_EQ(mask.n_set(), 1);
+
+  mask |= freeisle::core::Bitmask<TestEnum>(TestEnum::Test1, TestEnum::Test3);
+  EXPECT_TRUE(mask.is_set(TestEnum::Test1));
+  EXPECT_TRUE(mask.is_set(TestEnum::Test2));
+  EXPECT_TRUE(mask.is_set(TestEnum::Test3));
+  EXPECT_TRUE(mask.are_any_set());
+  EXPECT_EQ(mask.n_set(), 3);
+}
