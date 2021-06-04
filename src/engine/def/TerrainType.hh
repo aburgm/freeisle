@@ -1,5 +1,8 @@
 #pragma once
 
+#include "core/Enum.hh"
+#include "core/EnumMap.hh"
+
 namespace freeisle::def {
 
 /**
@@ -78,5 +81,26 @@ enum class OverlayTerrainType {
    */
   Num,
 };
+
+constexpr core::EnumEntry<BaseTerrainType> BaseTerrainTypes[] = {
+    {BaseTerrainType::Grass, "grass"},
+    {BaseTerrainType::Desert, "desert"},
+    {BaseTerrainType::Snow, "snow"},
+    {BaseTerrainType::ShallowWater, "shallow_water"},
+    {BaseTerrainType::DeepWater, "deep_water"},
+    {BaseTerrainType::Hill, "hill"},
+    {BaseTerrainType::Mountain, "mountain"},
+};
+
+constexpr core::EnumEntry<OverlayTerrainType> OverlayTerrainTypes[] = {
+    {OverlayTerrainType::Forest, "forest"},
+    {OverlayTerrainType::Road, "road"},
+    {OverlayTerrainType::Crevice, "crevice"},
+    {OverlayTerrainType::Fortification, "fortification"},
+};
+
+constexpr core::EnumMap<const char *, BaseTerrainType, OverlayTerrainType>
+    TerrainTypeNames =
+        core::get_enum_names(BaseTerrainTypes, OverlayTerrainTypes);
 
 } // namespace freeisle::def

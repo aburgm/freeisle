@@ -18,7 +18,7 @@ struct WeaponDef {
   /**
    * The type of damage that the weapon inflicts.
    */
-  DamageType damageType;
+  DamageType damage_type;
 
   /**
    * The base damage that the weapon inflicts; before modifiers due to
@@ -30,13 +30,13 @@ struct WeaponDef {
    * Minimum range of the weapon; the weapon cannot hit targets that
    * are closer to the unit than this number of hex tiles.
    */
-  uint32_t minRange;
+  uint32_t min_range;
 
   /**
    * Maximum range of the weapon; the weapon cannot hit targets that
    * are further away from the unit than this number of hex tiles.
    */
-  uint32_t maxRange;
+  uint32_t max_range;
 
   /**
    * Maximum ammo that the unit carries for this weapon. The weapon

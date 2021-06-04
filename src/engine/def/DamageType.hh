@@ -1,5 +1,8 @@
 #pragma once
 
+#include "core/Enum.hh"
+#include "core/EnumMap.hh"
+
 namespace freeisle::def {
 
 /**
@@ -36,5 +39,16 @@ enum class DamageType {
    */
   Num,
 };
+
+constexpr core::EnumEntry<DamageType> DamageTypes[] = {
+    {DamageType::SmallCaliber, "small_caliber"},
+    {DamageType::BigCaliber, "big_caliber"},
+    {DamageType::Missile, "missile"},
+    {DamageType::Energy, "energy"},
+    {DamageType::Explosive, "explosive"},
+};
+
+constexpr core::EnumMap<const char *, DamageType> DamageTypeNames =
+    core::get_enum_names(DamageTypes);
 
 } // namespace freeisle::def

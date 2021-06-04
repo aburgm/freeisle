@@ -2,7 +2,9 @@
 
 #include "json/Saver.hh"
 
+#include "core/Bitmask.hh"
 #include "core/Enum.hh"
+#include "core/EnumMap.hh"
 
 #include <fmt/format.h>
 
@@ -29,6 +31,24 @@ void save_enum(Context &ctx, Json::Value &value, const char *key, T val,
   assert(str != nullptr);
 
   save(ctx, value, key, str);
+}
+
+/**
+ * Save a bitmask of enumerants in a JSON object under a given key,
+ * as an array of bits set.
+ */
+template <typename T, uint32_t N>
+void save_bitmask(Context &ctx, Json::Value &value, const char *key,
+                  core::Bitmask<T> mask,
+                  const core::EnumEntry<T> (&entries)[N]) {
+  value[key] = Json::Value(Json::ValueType::arrayValue);
+  Json::Value &val = value[key];
+
+  for (uint32_t i = 0; i < N; ++i) {
+    if (mask.is_set(entries[i].value)) {
+      val.append(entries[i].str);
+    }
+  }
 }
 
 /**
@@ -149,6 +169,58 @@ private:
   const ContainerT *container_;
   ChildHandlerT child_handler_;
   std::map<const void *, std::string> *object_ids_;
+};
+
+/**
+ * Save an array of values, with a name assigned to each entry in the array,
+ * as a JSON object keyed by the name of the array element.
+ */
+template <typename T> class NamedArraySaver {
+public:
+  /**
+   * @param arr Array to be saved.
+   * @param size Number of array elements.
+   * @param names Names to use as keys for the array elements.
+   */
+  NamedArraySaver(const T *arr, size_t size, const char *const *names)
+      : arr_(arr), size_(size), names_(names) {}
+
+  /**
+   * Save the array into the given JSON value of type object.
+   */
+  void save(Context &ctx, Json::Value &value) {
+    for (size_t i = 0; i < size_; ++i) {
+      json::saver::save<T>(ctx, value, names_[i], arr_[i]);
+    }
+  }
+
+private:
+  const T *arr_;
+  const size_t size_;
+  const char *const *const names_;
+};
+
+/**
+ * Save an EnumMap as a named array (see NamedArraySaver).
+ */
+template <typename T, typename... Enums> class EnumMapSaver {
+public:
+  /**
+   * @param map The map to be saved.
+   * @param names Names to be assigned to each entry in the map. This can be
+   *              generated with freeisle::core::get_enum_names().
+   */
+  EnumMapSaver(const core::EnumMap<T, Enums...> &map,
+               const core::EnumMap<const char *, Enums...> &names)
+      : underlying(map.data(), map.size(), names.data()) {}
+
+  /**
+   * Save the enum map into the given JSON value of type object.
+   */
+  void save(Context &ctx, Json::Value &value) { underlying.save(ctx, value); }
+
+private:
+  NamedArraySaver<const T> underlying;
 };
 
 } // namespace freeisle::json::saver
