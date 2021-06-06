@@ -1,5 +1,6 @@
 #pragma once
 
+#include "def/Collection.hh"
 #include "def/ContainerDef.hh"
 #include "def/Resupply.hh"
 #include "def/TerrainType.hh"
@@ -44,12 +45,6 @@ struct UnitDef {
      */
     MoveAfterAction,
   };
-
-  /**
-   * System-internal unique identifier of the unit. This is used for example
-   * for frontends to know what graphics to render for the unit.
-   */
-  std::string id;
 
   /**
    * The human-readable name of the unit.
@@ -134,7 +129,7 @@ struct UnitDef {
   /**
    * Weapon specifications that this unit has.
    */
-  std::vector<WeaponDef> weapons;
+  Collection<WeaponDef> weapons;
 
   /**
    * Container definition of this unit for transporters.

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "def/Collection.hh"
 #include "def/DecorationDef.hh"
 #include "def/TerrainType.hh"
 
@@ -40,7 +41,7 @@ struct MapDef {
   /**
    * Loaded decorations.
    */
-  std::vector<DecorationDef> decoration_defs;
+  Collection<DecorationDef> decoration_defs;
 
   /**
    * The main map grid.

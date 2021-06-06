@@ -185,6 +185,23 @@ TEST(Loader, Composite) {
   EXPECT_TRUE(include_map.empty());
 }
 
+TEST(Loader, CompositeSubobjectWrongType) {
+  Abc abc{};
+  AbcHandler handler{abc};
+
+  const std::string text = "{\"a\": \"text\", \"b\": 12, \"c\": 55}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  ASSERT_THROW_KEEP_AS_E(
+      freeisle::json::loader::load_root_object(data, handler),
+      freeisle::json::loader::Error) {
+    EXPECT_EQ(e.path(), "");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 29);
+    EXPECT_EQ(e.message(), "Expected value to be of object type");
+  }
+}
+
 TEST(Loader, IncludeFromMemory) {
   Abc abc{};
   AbcHandler handler{abc};

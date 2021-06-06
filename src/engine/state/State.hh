@@ -5,7 +5,7 @@
 #include "state/Team.hh"
 #include "state/Unit.hh"
 
-#include "core/Ptr.hh"
+#include "def/Collection.hh"
 
 namespace freeisle::state {
 
@@ -31,22 +31,22 @@ struct State {
   /**
    * Teams participating.
    */
-  std::vector<Team> teams;
+  def::Collection<Team> teams;
 
   /**
    * Players participating, including eliminated players.
    */
-  std::vector<Player> players;
+  def::Collection<Player> players;
 
   /**
    * State of all shops in the game.
    */
-  std::vector<Shop> shops;
+  def::Collection<Shop> shops;
 
   /**
    * State of all units in the game.
    */
-  std::list<Unit> units;
+  def::Collection<Unit> units;
 
   /**
    * Current turn number.
@@ -56,7 +56,7 @@ struct State {
   /**
    * Player whose turn it currently is.
    */
-  core::Ptr<Player> player_at_turn;
+  def::Ref<Player> player_at_turn;
 };
 
 } // namespace freeisle::state

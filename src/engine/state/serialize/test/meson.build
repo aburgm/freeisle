@@ -1,6 +1,10 @@
 t = executable(
   'serialize_test',
-  ['TestMapDefHandlers.cc'],
+  [
+    'TestCollectionLoaders.cc',
+    'TestCollectionSavers.cc',
+    'TestMapDefHandlers.cc',
+  ],
   dependencies : [serialize_dep, gtest],
   include_directories : engine)
 

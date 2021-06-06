@@ -88,6 +88,7 @@ void save_object(Context &ctx, Json::Value &value, const char *key,
   restore_includes(ctx, obj);
 }
 
+#if 0
 /**
  * A handler for containers where every entry has an ID that's not stored
  * in the object itself. The structure is something like this:
@@ -170,6 +171,7 @@ private:
   ChildHandlerT child_handler_;
   std::map<const void *, std::string> *object_ids_;
 };
+#endif
 
 /**
  * Save an array of values, with a name assigned to each entry in the array,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "def/Collection.hh"
 #include "def/MapDef.hh"
 #include "def/ShopDef.hh"
 #include "def/UnitDef.hh"
@@ -41,12 +42,12 @@ struct Scenario {
   /**
    * The shops on the map.
    */
-  std::vector<ShopDef> shops;
+  Collection<ShopDef> shops;
 
   /**
    * The units available in this scenario.
    */
-  std::vector<UnitDef> units;
+  Collection<UnitDef> units;
 };
 
 } // namespace freeisle::def

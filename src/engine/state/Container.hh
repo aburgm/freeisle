@@ -1,8 +1,7 @@
 #pragma once
 
+#include "def/Collection.hh"
 #include "def/ContainerDef.hh"
-
-#include "core/Ptr.hh"
 
 #include <list>
 
@@ -32,7 +31,7 @@ struct Container {
   /**
    * The units currently being contained.
    */
-  std::list<core::Ptr<Unit>> units;
+  std::list<def::Ref<Unit>> units;
 };
 
 } // namespace freeisle::state

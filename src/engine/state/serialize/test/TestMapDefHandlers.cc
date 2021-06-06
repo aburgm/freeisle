@@ -17,10 +17,9 @@
 
 class TestMapDefHandlers : public ::freeisle::fs::test::TempDirFixture {
 public:
-  TestMapDefHandlers() : aux{system.logger, object_ids} {}
+  TestMapDefHandlers() : aux{system.logger} {}
 
   freeisle::log::test::System system;
-  std::map<const void *, std::string> object_ids;
   freeisle::state::serialize::AuxData aux;
 };
 
@@ -37,11 +36,10 @@ TEST_F(TestMapDefHandlers, LoadEmpty5x5) {
   freeisle::json::loader::load_root_object(data, loader);
 
   ASSERT_EQ(map.decoration_defs.size(), 1);
-  ASSERT_EQ(map.decoration_defs[0].name, "flowers");
+  ASSERT_EQ(map.decoration_defs.begin()->first, "obj001");
+  ASSERT_EQ(map.decoration_defs.begin()->second.name, "flowers");
   ASSERT_EQ(map.grid.width(), 5);
   ASSERT_EQ(map.grid.height(), 5);
-  ASSERT_EQ(object_ids.size(), 1);
-  ASSERT_EQ(object_ids[&map.decoration_defs[0]], "obj001");
 
   for (uint32_t y = 0; y < 5; ++y) {
     for (uint32_t x = 0; x < 5; ++x) {
@@ -69,11 +67,10 @@ TEST_F(TestMapDefHandlers, LoadEmpty5x5FromFile) {
   loader.load(pair.first, pair.second);
 
   ASSERT_EQ(map.decoration_defs.size(), 1);
-  ASSERT_EQ(map.decoration_defs[0].name, "flowers");
+  ASSERT_EQ(map.decoration_defs.begin()->first, "obj001");
+  ASSERT_EQ(map.decoration_defs.begin()->second.name, "flowers");
   ASSERT_EQ(map.grid.width(), 5);
   ASSERT_EQ(map.grid.height(), 5);
-  ASSERT_EQ(object_ids.size(), 1);
-  ASSERT_EQ(object_ids[&map.decoration_defs[0]], "obj001");
 
   for (uint32_t y = 0; y < 5; ++y) {
     for (uint32_t x = 0; x < 5; ++x) {
@@ -99,13 +96,16 @@ TEST_F(TestMapDefHandlers, LoadVarying4x4) {
   freeisle::json::loader::load_root_object(data, loader);
 
   ASSERT_EQ(map.decoration_defs.size(), 2);
-  ASSERT_EQ(map.decoration_defs[0].name, "flowers");
-  ASSERT_EQ(map.decoration_defs[1].name, "pebbles");
+  freeisle::def::Collection<freeisle::def::DecorationDef>::iterator obj001 =
+      map.decoration_defs.find("obj001");
+  ASSERT_NE(obj001, map.decoration_defs.end());
+  freeisle::def::Collection<freeisle::def::DecorationDef>::iterator obj002 =
+      map.decoration_defs.find("obj002");
+  ASSERT_NE(obj002, map.decoration_defs.end());
+  ASSERT_EQ(obj001->second.name, "flowers");
+  ASSERT_EQ(obj002->second.name, "pebbles");
   ASSERT_EQ(map.grid.width(), 4);
   ASSERT_EQ(map.grid.height(), 4);
-  ASSERT_EQ(object_ids.size(), 2);
-  ASSERT_EQ(object_ids[&map.decoration_defs[0]], "obj001");
-  ASSERT_EQ(object_ids[&map.decoration_defs[1]], "obj002");
 
   EXPECT_EQ(map.grid(0, 0).base_terrain,
             freeisle::def::BaseTerrainType::Mountain);
@@ -141,8 +141,8 @@ TEST_F(TestMapDefHandlers, LoadVarying4x4) {
   EXPECT_EQ(*map.grid(1, 2).overlay_terrain,
             freeisle::def::OverlayTerrainType::Forest);
 
-  EXPECT_EQ(map.grid(0, 3).decoration, &map.decoration_defs[0]);
-  EXPECT_EQ(map.grid(2, 1).decoration, &map.decoration_defs[1]);
+  EXPECT_EQ(map.grid(0, 3).decoration, &obj001->second);
+  EXPECT_EQ(map.grid(2, 1).decoration, &obj002->second);
 }
 
 TEST_F(TestMapDefHandlers, LoadCorruptPNG) {
@@ -310,7 +310,7 @@ TEST_F(TestMapDefHandlers, LoadInvalidOverlayTerrain) {
 
 TEST_F(TestMapDefHandlers, SaveEmpty5x5) {
   const freeisle::def::MapDef map = {
-      .decoration_defs = {{{.name = "flowers"}}},
+      .decoration_defs = {{"obj001", {.name = "flowers"}}},
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5),
   };
 
@@ -335,7 +335,7 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5ToFile) {
   const freeisle::def::MapDef map = {
       .decoration_defs =
           {
-              {{.name = "flowers"}},
+              {"obj001", {.name = "flowers"}},
           },
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5),
   };
@@ -370,8 +370,8 @@ TEST_F(TestMapDefHandlers, SaveVarying4x4) {
   freeisle::def::MapDef map = {
       .decoration_defs =
           {
-              {{.name = "flowers"}},
-              {{.name = "pebbles"}},
+              {"obj001", {.name = "flowers"}},
+              {"obj002", {.name = "pebbles"}},
           },
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(4, 4),
   };
@@ -400,8 +400,8 @@ TEST_F(TestMapDefHandlers, SaveVarying4x4) {
   map.grid(0, 2).overlay_terrain = freeisle::def::OverlayTerrainType::Forest;
   map.grid(1, 2).overlay_terrain = freeisle::def::OverlayTerrainType::Forest;
 
-  map.grid(0, 3).decoration = &map.decoration_defs[0];
-  map.grid(2, 1).decoration = &map.decoration_defs[1];
+  map.grid(0, 3).decoration = &map.decoration_defs.find("obj001")->second;
+  map.grid(2, 1).decoration = &map.decoration_defs.find("obj002")->second;
 
   freeisle::state::serialize::MapDefSaver saver(map, aux);
 
@@ -416,8 +416,6 @@ TEST_F(TestMapDefHandlers, SaveVarying4x4) {
       "\"iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAJUlEQVQImS3GsQ0AIAwDMC"
       "cD//+LRBnAk7MYsKt/igg0ctTkLVzAPAcL8VlLnAAAAABJRU5ErkJggg==\"}";
   freeisle::json::test::check(value, expected_value);
-
-  // TODO(armin): load back and compare to original instead?
 }
 
 TEST_F(TestMapDefHandlers, SaveTooManyDecorations) {
@@ -429,8 +427,8 @@ TEST_F(TestMapDefHandlers, SaveTooManyDecorations) {
   };
 
   for (uint32_t i = 0; i < 256; ++i) {
-    map.decoration_defs.push_back(
-        freeisle::def::DecorationDef{.name = fmt::format("deco{}", i)});
+    map.decoration_defs[fmt::format("obj{}", i)] =
+        freeisle::def::DecorationDef{.name = fmt::format("deco{}", i)};
   }
 
   freeisle::state::serialize::MapDefSaver saver(map, aux);

@@ -77,12 +77,12 @@ T load_enum(Context &ctx, Json::Value &value, const char *key,
 template <typename T, uint32_t N>
 core::Bitmask<T> load_bitmask(Context &ctx, Json::Value &value, const char *key,
                               const core::EnumEntry<T> (&entries)[N]) {
-  const Json::Value &val = value[key];
-  if (val.isNull()) {
+  if (!value.isMember(key)) {
     throw Error::create(ctx, "", value,
                         fmt::format("Mandatory field \"{}\" is missing", key));
   }
 
+  const Json::Value &val = value[key];
   if (!val.isArray()) {
     throw Error::create(ctx, key, val,
                         fmt::format("Field \"{}\" is not of array type", key));
@@ -153,6 +153,7 @@ void load_object(Context &ctx, Json::Value &value, const char *key,
   handler.load(ctx, value[key]);
 }
 
+#if 0
 /**
  * A handler for containers where every entry has an ID that's not stored
  * in the object itself. The structure is something like this:
@@ -240,6 +241,7 @@ private:
    */
   std::map<const void *, std::string> *object_ids_;
 };
+#endif
 
 /**
  * Loads an array of values of type T where each entry in the array

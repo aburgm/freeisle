@@ -5,7 +5,6 @@ t = executable(
     'TestEnum.cc',
     'TestEnumMap.cc',
     'TestGrid.cc',
-    'TestPtr.cc',
     'TestSentinel.cc',
     'TestString.cc'
   ],

@@ -2,12 +2,12 @@
 
 #include "state/Team.hh"
 
+#include "def/Collection.hh"
 #include "def/Goal.hh"
 
 #include "core/Bitmask.hh"
 #include "core/Color.hh"
 #include "core/Grid.hh"
-#include "core/Ptr.hh"
 
 #include <list>
 
@@ -55,7 +55,7 @@ struct Player {
   /**
    * Team that this player is in, or null if they are not in any team.
    */
-  core::Ptr<Team> team;
+  def::Ref<Team> team;
 
   /**
    * fog of war (fow) state for this player.
@@ -71,12 +71,12 @@ struct Player {
    * Unit designated as the captain for this player, or null if there is no
    * such unit. The unit must have the isCaptain flag set.
    */
-  core::Ptr<Unit> captain;
+  def::Ref<Unit> captain;
 
   /**
    * List of all units of this player.
    */
-  std::list<core::Ptr<Unit>> units;
+  std::list<def::Ref<Unit>> units;
 
   /**
    * Lose conditions for this player. If any of them is fulfilled, the player

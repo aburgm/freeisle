@@ -1,5 +1,6 @@
 #pragma once
 
+#include "def/Collection.hh"
 #include "def/ContainerDef.hh"
 #include "def/Location.hh"
 #include "def/UnitDef.hh"
@@ -55,7 +56,7 @@ struct ShopDef {
   /**
    * List of units that can be produced in the shop.
    */
-  std::vector<const UnitDef *> productionList;
+  std::vector<Ref<UnitDef>> productionList;
 
   /**
    * Location of the shop on the map.
