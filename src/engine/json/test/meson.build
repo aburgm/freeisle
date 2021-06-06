@@ -1,12 +1,13 @@
 t = executable(
   'json_test',
   [
-    'BitmaskLoaderTest.cc',
-    'BitmaskSaverTest.cc',
-    'EnumMapLoaderTest.cc',
-    'EnumMapSaverTest.cc',
-    'LoaderTest.cc',
-    'SaverTest.cc',
+    'TestBitmaskLoader.cc',
+    'TestBitmaskSaver.cc',
+    'TestEnumMapLoader.cc',
+    'TestEnumMapSaver.cc',
+    'TestEnum.cc',
+    'TestLoader.cc',
+    'TestSaver.cc',
   ],
   dependencies : [gtest, json_dep],
   include_directories : engine)
