@@ -60,9 +60,9 @@ TEST(BitmaskLoader, Null) {
       freeisle::json::loader::load_root_object(data, handler),
       freeisle::json::loader::Error) {
     EXPECT_EQ(e.path(), "");
-    EXPECT_EQ(e.message(), "Mandatory field \"mask\" is missing");
+    EXPECT_EQ(e.message(), "Field \"mask\" is not of array type");
     EXPECT_EQ(e.line(), 1);
-    EXPECT_EQ(e.col(), 1);
+    EXPECT_EQ(e.col(), 10);
   }
 
   EXPECT_FALSE(test.mask.are_any_set());

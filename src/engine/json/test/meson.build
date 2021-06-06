@@ -7,8 +7,6 @@ t = executable(
     'EnumMapSaverTest.cc',
     'LoaderTest.cc',
     'SaverTest.cc',
-    'MappedContainerLoaderTest.cc',
-    'MappedContainerSaverTest.cc'
   ],
   dependencies : [gtest, json_dep],
   include_directories : engine)

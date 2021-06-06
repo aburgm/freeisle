@@ -1,5 +1,7 @@
 #pragma once
 
+#include "collection/Ref.hh"
+
 namespace freeisle::state {
 
 /**
@@ -13,17 +15,17 @@ struct Map {
     /**
      * Which unit is on the surface (or in the air) of this hex, if any.
      */
-    Ptr<Unit> surfaceUnit;
+    def::Ref<Unit> surfaceUnit;
 
     /**
      * Which unit is below the surface (under water) on this hex, if any.
      */
-    Ptr<Unit> subSurfaceUnit;
+    def::Ref<Unit> subSurfaceUnit;
 
     /**
      * Which shop is on this hex, if any.
      */
-    Ptr<Shop> shop;
+    def::Ref<Shop> shop;
   };
 
   /**

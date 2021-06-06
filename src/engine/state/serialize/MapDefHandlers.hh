@@ -1,6 +1,7 @@
 #pragma once
 
 #include "state/serialize/AuxData.hh"
+#include "state/serialize/CollectionLoaders.hh"
 
 #include "json/LoadUtil.hh"
 #include "json/SaveUtil.hh"
@@ -11,19 +12,20 @@ namespace freeisle::state::serialize {
 
 class DecorationDefLoader {
 public:
-  DecorationDefLoader(std::map<uint32_t, uint32_t> &indices);
+  DecorationDefLoader(std::map<uint32_t, const def::DecorationDef *> &indices);
 
   void set(def::DecorationDef &def);
   void load(json::loader::Context &ctx, Json::Value &value);
 
 private:
   def::DecorationDef *def_;
-  std::map<uint32_t, uint32_t> &indices;
+  std::map<uint32_t, const def::DecorationDef *> &indices;
 };
 
 class DecorationDefSaver {
 public:
-  DecorationDefSaver();
+  DecorationDefSaver(
+      std::map<const def::DecorationDef *, uint32_t> &reverse_index_map);
 
   void set(const def::DecorationDef &def);
   void save(json::saver::Context &ctx, Json::Value &value);
@@ -31,11 +33,12 @@ public:
 private:
   const def::DecorationDef *def_;
   uint32_t index_;
+  std::map<const def::DecorationDef *, uint32_t> &reverse_index_map_;
 };
 
 class DecorationDefContainerLoader {
 public:
-  DecorationDefContainerLoader(std::vector<def::DecorationDef> &container,
+  DecorationDefContainerLoader(def::Collection<def::DecorationDef> &container,
                                AuxData &aux);
 
   void load(json::loader::Context &ctx, Json::Value &value);
@@ -43,11 +46,9 @@ public:
   const def::DecorationDef *get_decoration_for_index(uint32_t index) const;
 
 private:
-  std::vector<def::DecorationDef> &container;
-  std::map<uint32_t, uint32_t> indices;
-  json::loader::MappedContainerHandler<std::vector<def::DecorationDef>,
-                                       DecorationDefLoader>
-      loader;
+  def::Collection<def::DecorationDef> &container;
+  std::map<uint32_t, const def::DecorationDef *> indices;
+  CollectionLoader<def::DecorationDef, DecorationDefLoader> loader;
 };
 
 class MapDefLoader {

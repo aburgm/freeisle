@@ -1,5 +1,7 @@
 #include "state/serialize/MapDefHandlers.hh"
 
+#include "state/serialize/CollectionSavers.hh"
+
 #include "json/LoadUtil.hh"
 #include "json/SaveUtil.hh"
 
@@ -9,7 +11,8 @@
 
 namespace freeisle::state::serialize {
 
-DecorationDefLoader::DecorationDefLoader(std::map<uint32_t, uint32_t> &indices)
+DecorationDefLoader::DecorationDefLoader(
+    std::map<uint32_t, const def::DecorationDef *> &indices)
     : def_(nullptr), indices(indices) {}
 
 void DecorationDefLoader::set(def::DecorationDef &def) { def_ = &def; }
@@ -34,10 +37,12 @@ void DecorationDefLoader::load(json::loader::Context &ctx, Json::Value &value) {
                                       "Index 256 or greater not allowed");
   }
 
-  indices[index] = indices.size();
+  indices[index] = def_;
 }
 
-DecorationDefSaver::DecorationDefSaver() : def_(nullptr), index_(0) {}
+DecorationDefSaver::DecorationDefSaver(
+    std::map<const def::DecorationDef *, uint32_t> &reverse_index_map)
+    : def_(nullptr), index_(0), reverse_index_map_(reverse_index_map) {}
 
 void DecorationDefSaver::set(const def::DecorationDef &def) { def_ = &def; }
 
@@ -48,13 +53,13 @@ void DecorationDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   if (index_ > 0xff) {
     throw std::runtime_error("Too many decoration defs");
   }
+
+  reverse_index_map_[def_] = index_;
 }
 
 DecorationDefContainerLoader::DecorationDefContainerLoader(
-    std::vector<def::DecorationDef> &container, AuxData &aux)
-    : container(container), loader(&aux.object_ids_, indices) {
-  loader.set(container);
-}
+    def::Collection<def::DecorationDef> &container, AuxData &aux)
+    : container(container), loader(container, indices) {}
 
 void DecorationDefContainerLoader::load(json::loader::Context &ctx,
                                         Json::Value &value) {
@@ -63,13 +68,13 @@ void DecorationDefContainerLoader::load(json::loader::Context &ctx,
 
 const def::DecorationDef *
 DecorationDefContainerLoader::get_decoration_for_index(uint32_t index) const {
-  std::map<uint32_t, uint32_t>::const_iterator iter = indices.find(index);
+  std::map<uint32_t, const def::DecorationDef *>::const_iterator iter =
+      indices.find(index);
   if (iter == indices.end()) {
     return nullptr;
   }
 
-  assert(iter->second < container.size());
-  return &container[iter->second];
+  return iter->second;
 }
 
 MapDefLoader::MapDefLoader(def::MapDef &map, AuxData &aux)
@@ -151,10 +156,9 @@ MapDefSaver::MapDefSaver(const def::MapDef &map, AuxData &aux)
 void MapDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   aux_.logger.info("Saving map definition...");
 
-  json::saver::MappedContainerHandler<std::vector<def::DecorationDef>,
-                                      DecorationDefSaver>
-      decorations_saver;
-  decorations_saver.set(map_.decoration_defs);
+  std::map<const def::DecorationDef *, uint32_t> reverse_index_map;
+  CollectionSaver<def::DecorationDef, DecorationDefSaver> decorations_saver(
+      map_.decoration_defs, reverse_index_map);
   json::saver::save_object(ctx, value, "decorations", decorations_saver);
 
   // Encode hex grid as RGB8 image data, so we can save it as PNG
@@ -174,8 +178,11 @@ void MapDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
       if (map_.grid(x, y).decoration == nullptr) {
         image_data(x, y).b = 0;
       } else {
-        image_data(x, y).b =
-            map_.grid(x, y).decoration - &map_.decoration_defs[0] + 1;
+        std::map<const def::DecorationDef *, uint32_t>::const_iterator iter =
+            reverse_index_map.find(map_.grid(x, y).decoration);
+        assert(iter != reverse_index_map.end());
+        assert(iter->second < 0xff);
+        image_data(x, y).b = iter->second;
       }
     }
   }

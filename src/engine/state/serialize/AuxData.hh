@@ -9,7 +9,6 @@ namespace freeisle::state::serialize {
 
 struct AuxData {
   log::Logger &logger;
-  std::map<const void *, std::string> &object_ids_;
 };
 
 } // namespace freeisle::state::serialize

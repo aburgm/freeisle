@@ -4,9 +4,8 @@
 #include "state/Player.hh"
 #include "state/Shop.hh"
 
+#include "def/Collection.hh"
 #include "def/UnitDef.hh"
-
-#include "core/Ptr.hh"
 
 namespace freeisle::state {
 
@@ -43,7 +42,7 @@ struct Unit {
   /**
    * Player who controls this unit.
    */
-  core::Ptr<Player> owner;
+  def::Ref<Player> owner;
 
   /**
    * Current location of the unit on the map.
@@ -100,10 +99,10 @@ struct Unit {
   def::Resupply supplies;
 
   /**
-   * Ammo the weapon systems of this unit have left. One entry in the vector
-   * for each weapon defined in the unit def's WeaponDefs.
+   * Ammo the weapon systems of this unit have left. One entry in the
+   * collection for each weapon defined in the unit def's WeaponDefs.
    */
-  std::vector<uint32_t> ammo;
+  def::RefMap<def::WeaponDef, uint32_t> ammo;
 
   /**
    * Container state for transporter units.
@@ -113,12 +112,12 @@ struct Unit {
   /**
    * Pointer to the unit that is transporting this unit, if any.
    */
-  core::Ptr<Unit> containedInUnit;
+  def::Ref<Unit> containedInUnit;
 
   /**
    * Pointer to the shop that this unit is inside, if any.
    */
-  core::Ptr<Shop> containedInShop;
+  def::Ref<Shop> containedInShop;
 };
 
 } // namespace freeisle::state
