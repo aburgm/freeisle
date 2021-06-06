@@ -73,14 +73,12 @@ TEST(CollectionSaver, Empty) {
   Objects objects{};
   ObjectsSaver saver{objects};
 
-  const std::map<std::string, freeisle::json::IncludeInfo> include_map;
-  freeisle::json::saver::Context ctx{.include_map = include_map};
-  Json::Value value;
-  saver.save(ctx, value);
+  const std::vector<uint8_t> result =
+      freeisle::json::saver::save_root_object(saver, nullptr);
 
   const std::string expected_value =
       "{\"objects\": {}, \"object_numbers\": {}, \"subset\": []}";
-  freeisle::json::test::check(value, expected_value);
+  freeisle::json::test::check(result, expected_value);
 }
 
 TEST(CollectionSaver, OneObject) {
@@ -99,16 +97,14 @@ TEST(CollectionSaver, OneObject) {
 
   ObjectsSaver saver{objects};
 
-  const std::map<std::string, freeisle::json::IncludeInfo> include_map;
-  freeisle::json::saver::Context ctx{.include_map = include_map};
-  Json::Value value;
-  saver.save(ctx, value);
+  const std::vector<uint8_t> result =
+      freeisle::json::saver::save_root_object(saver, nullptr);
 
   const std::string expected_value =
       "{\"objects\": {\"mine\": {\"name\": \"my object\"}}, \"some_object\": "
       "\"mine\", \"object_numbers\": {\"mine\": {\"number\": 55}}, \"subset\": "
       "[]}";
-  freeisle::json::test::check(value, expected_value);
+  freeisle::json::test::check(result, expected_value);
 }
 
 TEST(CollectionSaver, TwoObjects) {
@@ -132,15 +128,13 @@ TEST(CollectionSaver, TwoObjects) {
 
   ObjectsSaver saver{objects};
 
-  const std::map<std::string, freeisle::json::IncludeInfo> include_map;
-  freeisle::json::saver::Context ctx{.include_map = include_map};
-  Json::Value value;
-  saver.save(ctx, value);
+  const std::vector<uint8_t> result =
+      freeisle::json::saver::save_root_object(saver, nullptr);
 
   const std::string expected_value =
       "{\"objects\": {\"mine\": {\"name\": \"my object\"}, \"yours\": "
       "{\"name\": \"your object\"}}, \"some_object\": \"yours\", "
       "\"object_numbers\": {\"mine\": {\"number\": 55}, \"yours\": "
       "{\"number\": 33}}, \"subset\": [\"mine\"]}";
-  freeisle::json::test::check(value, expected_value);
+  freeisle::json::test::check(result, expected_value);
 }

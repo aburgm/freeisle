@@ -4,6 +4,7 @@ t = executable(
     'TestCollectionLoaders.cc',
     'TestCollectionSavers.cc',
     'TestMapDefHandlers.cc',
+    'TestUnitDefHandlers.cc',
   ],
   dependencies : [serialize_dep, gtest],
   include_directories : engine)
