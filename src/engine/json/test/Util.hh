@@ -107,4 +107,9 @@ inline void check(const std::vector<uint8_t> result,
   return check(root, expected);
 }
 
+inline void check(const std::vector<uint8_t> result,
+                  const std::vector<uint8_t> &expected) {
+  return check(result, std::string(expected.begin(), expected.end()));
+}
+
 } // namespace freeisle::json::test

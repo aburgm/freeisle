@@ -1,6 +1,7 @@
 serialize_lib = static_library(
   'serialize', [
     'MapDefHandlers.cc',
+    'ShopDefHandlers.cc',
     'UnitDefHandlers.cc',
   ],
   dependencies : [json_dep],
