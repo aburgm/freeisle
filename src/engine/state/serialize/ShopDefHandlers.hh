@@ -2,8 +2,8 @@
 
 #include "state/serialize/AuxData.hh"
 
-#include "json/LoadUtil.hh"
-#include "json/SaveUtil.hh"
+#include "json/Loader.hh"
+#include "json/Saver.hh"
 
 #include "def/Location.hh"
 #include "def/MapDef.hh"

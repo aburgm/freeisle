@@ -16,10 +16,10 @@ void LocationLoader::load(json::loader::Context &ctx, Json::Value &value) {
   loc_.y = json::loader::load<uint32_t>(ctx, value, "y");
 
   if (loc_.x >= map_.grid.width() || loc_.y >= map_.grid.height()) {
-    throw json::loader::Error::create(
-        ctx, "", value,
+    const std::string message =
         fmt::format("Location is out of bounds; loc={},{} but bounds={}x{}",
-                    loc_.x, loc_.y, map_.grid.width(), map_.grid.height()));
+                    loc_.x, loc_.y, map_.grid.width(), map_.grid.height());
+    throw json::loader::Error::create(ctx, "", value, message);
   }
 }
 
