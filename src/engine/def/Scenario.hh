@@ -40,14 +40,14 @@ struct Scenario {
   MapDef map;
 
   /**
-   * The shops on the map.
-   */
-  Collection<ShopDef> shops;
-
-  /**
    * The units available in this scenario.
    */
   Collection<UnitDef> units;
+
+  /**
+   * The shops on the map.
+   */
+  Collection<ShopDef> shops;
 };
 
 } // namespace freeisle::def

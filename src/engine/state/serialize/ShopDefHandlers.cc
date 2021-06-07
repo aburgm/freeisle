@@ -30,10 +30,12 @@ void LocationSaver::save(json::saver::Context &ctx, Json::Value &value) {
   json::saver::save(ctx, value, "y", loc_.y);
 }
 
-ShopDefLoader::ShopDefLoader(def::ShopDef &shop, const def::MapDef &map,
+ShopDefLoader::ShopDefLoader(const def::MapDef &map,
                              def::Collection<def::UnitDef> &unit_defs,
                              AuxData &aux)
-    : shop_(&shop), map_(map), unit_defs_(unit_defs), aux_(aux) {}
+    : shop_(nullptr), map_(map), unit_defs_(unit_defs), aux_(aux) {}
+
+void ShopDefLoader::set(def::ShopDef &shop) { shop_ = &shop; }
 
 void ShopDefLoader::load(json::loader::Context &ctx, Json::Value &value) {
   assert(shop_ != nullptr);
@@ -50,10 +52,11 @@ void ShopDefLoader::load(json::loader::Context &ctx, Json::Value &value) {
   json::loader::load_object(ctx, value, "location", location);
 }
 
-ShopDefSaver::ShopDefSaver(const def::ShopDef &shop,
-                           const def::Collection<def::UnitDef> &unit_defs,
+ShopDefSaver::ShopDefSaver(const def::Collection<def::UnitDef> &unit_defs,
                            AuxData &aux)
-    : shop_(&shop), unit_defs_(unit_defs), aux_(aux) {}
+    : shop_(nullptr), unit_defs_(unit_defs), aux_(aux) {}
+
+void ShopDefSaver::set(const def::ShopDef &shop) { shop_ = &shop; }
 
 void ShopDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   assert(shop_ != nullptr);

@@ -314,7 +314,7 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5) {
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5),
   };
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux);
+  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.include_map = include_map};
@@ -340,7 +340,7 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5ToFile) {
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5),
   };
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux);
+  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.path = "save.json",
@@ -403,7 +403,7 @@ TEST_F(TestMapDefHandlers, SaveVarying4x4) {
   map.grid(0, 3).decoration = &map.decoration_defs.find("obj001")->second;
   map.grid(2, 1).decoration = &map.decoration_defs.find("obj002")->second;
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux);
+  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.include_map = include_map};
@@ -431,7 +431,7 @@ TEST_F(TestMapDefHandlers, SaveTooManyDecorations) {
         freeisle::def::DecorationDef{.name = fmt::format("deco{}", i)};
   }
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux);
+  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.include_map = include_map};

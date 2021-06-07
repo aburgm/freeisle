@@ -31,7 +31,9 @@ TEST_F(TestShopDefHandlers, Load) {
   ASSERT_NE(grunt, unit_defs.end());
 
   freeisle::def::ShopDef shop;
-  freeisle::state::serialize::ShopDefLoader loader(shop, map, unit_defs, aux);
+  freeisle::state::serialize::ShopDefLoader loader(map, unit_defs, aux);
+  loader.set(shop);
+
   freeisle::json::loader::load_root_object("data/shop_fayetteville.json",
                                            loader);
 
@@ -62,7 +64,9 @@ TEST_F(TestShopDefHandlers, LoadInvalidLocation) {
   ASSERT_NE(grunt, unit_defs.end());
 
   freeisle::def::ShopDef shop;
-  freeisle::state::serialize::ShopDefLoader loader(shop, map, unit_defs, aux);
+  freeisle::state::serialize::ShopDefLoader loader(map, unit_defs, aux);
+  loader.set(shop);
+
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(
                              "data/shop_fayetteville.json", loader),
                          freeisle::json::loader::Error) {
@@ -94,7 +98,8 @@ TEST_F(TestShopDefHandlers, Save) {
       .production_list = {grunt},
       .location = {.x = 4, .y = 3}};
 
-  freeisle::state::serialize::ShopDefSaver saver(shop, unit_defs, aux);
+  freeisle::state::serialize::ShopDefSaver saver(unit_defs, aux);
+  saver.set(shop);
 
   const std::vector<uint8_t> result =
       freeisle::json::saver::save_root_object(saver, nullptr);

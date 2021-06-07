@@ -4,6 +4,7 @@ t = executable(
     'TestCollectionLoaders.cc',
     'TestCollectionSavers.cc',
     'TestMapDefHandlers.cc',
+    'TestScenarioHandlers.cc',
     'TestShopDefHandlers.cc',
     'TestUnitDefHandlers.cc',
   ],
