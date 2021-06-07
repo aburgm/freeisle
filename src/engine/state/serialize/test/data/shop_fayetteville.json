@@ -1,0 +1,16 @@
+{"name": "Fayetteville",
+ "type": "town",
+ "income": 350,
+ "container": {
+   "max_units": 4,
+   "max_weight": 4000,
+   "supported_levels": ["land"]
+ },
+ "production_list": [
+   "grunt"
+ ],
+ "location": {
+   "x": 4,
+   "y": 3
+ }
+}

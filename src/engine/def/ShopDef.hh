@@ -13,13 +13,6 @@ namespace freeisle::def {
  * Represents a shop somewhere on the map.
  */
 struct ShopDef {
-  // noncopyable--can't guarantee that pointers to UnitDefs are
-  // going to be same.
-  ShopDef(const ShopDef &) = delete;
-  ShopDef(ShopDef &&) = delete;
-  ShopDef &operator=(const ShopDef &) = delete;
-  ShopDef &operator=(ShopDef &&) = delete;
-
   /**
    * Specifies the type of shop.
    */
@@ -27,7 +20,7 @@ struct ShopDef {
     HQ,
     Town,
     Factory,
-    Harbour,
+    Harbor,
     Airport,
   };
 
@@ -56,12 +49,18 @@ struct ShopDef {
   /**
    * List of units that can be produced in the shop.
    */
-  std::vector<Ref<UnitDef>> productionList;
+  RefSet<UnitDef> production_list;
 
   /**
    * Location of the shop on the map.
    */
   Location location;
+};
+
+constexpr core::EnumEntry<ShopDef::Type> ShopDefTypes[] = {
+    {ShopDef::Type::HQ, "hq"},           {ShopDef::Type::Town, "town"},
+    {ShopDef::Type::Factory, "factory"}, {ShopDef::Type::Harbor, "harbor"},
+    {ShopDef::Type::Airport, "airport"},
 };
 
 } // namespace freeisle::def
