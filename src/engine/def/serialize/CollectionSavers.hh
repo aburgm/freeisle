@@ -5,7 +5,7 @@
 #include "json/SaveUtil.hh"
 #include "json/Saver.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 /**
  * Saves a collection in the JSON document as an object with one entry for
@@ -107,4 +107,4 @@ void save_ref_set(json::saver::Context &ctx, Json::Value &value,
   }
 }
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

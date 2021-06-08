@@ -5,10 +5,10 @@
 #include <map>
 #include <string>
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 struct AuxData {
   log::Logger &logger;
 };
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

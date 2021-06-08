@@ -1,4 +1,4 @@
-#include "state/serialize/ScenarioHandlers.hh"
+#include "def/serialize/ScenarioHandlers.hh"
 
 #include "fs/Path.hh"
 
@@ -14,13 +14,13 @@ public:
   TestScenarioHandlers() : aux{system.logger} {}
 
   freeisle::log::test::System system;
-  freeisle::state::serialize::AuxData aux;
+  freeisle::def::serialize::AuxData aux;
 };
 
 TEST_F(TestScenarioHandlers, Load) {
   freeisle::def::Scenario scenario;
   ;
-  freeisle::state::serialize::ScenarioLoader loader(scenario, aux);
+  freeisle::def::serialize::ScenarioLoader loader(scenario, aux);
 
   freeisle::json::loader::load_root_object(
       freeisle::fs::path::join(orig_directory, "data", "scenario.json").c_str(),
@@ -52,8 +52,7 @@ TEST_F(TestScenarioHandlers, Save) {
       {".shops.fayetteville",
        freeisle::json::IncludeInfo{.filename = "shop_fayetteville.json"}}};
 
-  freeisle::state::serialize::ScenarioSaver saver(scenario, aux,
-                                                  "empty_5x5.png");
+  freeisle::def::serialize::ScenarioSaver saver(scenario, aux, "empty_5x5.png");
   freeisle::json::saver::save_root_object("saved.json", saver, &include_map);
 
   const std::vector<uint8_t> result =
