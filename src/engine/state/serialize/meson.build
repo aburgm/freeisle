@@ -1,6 +1,7 @@
 serialize_lib = static_library(
   'serialize', [
     'MapDefHandlers.cc',
+    'ScenarioHandlers.cc',
     'ShopDefHandlers.cc',
     'UnitDefHandlers.cc',
   ],

@@ -1,0 +1,23 @@
+{
+  "name": "My scenario",
+  "description": "Scenario description",
+  "map": {
+    "decorations": {
+      "obj001": {
+        "name": "flowers",
+        "index": 1
+      }
+    },
+    "grid": "empty_5x5.png"
+  },
+  "units": {
+    "grunt": {
+      "include": "unit_grunt.json"
+    }
+  },
+  "shops": {
+    "fayetteville": {
+      "include": "shop_fayetteville.json"
+    }
+  }
+}

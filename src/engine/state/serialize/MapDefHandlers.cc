@@ -150,8 +150,10 @@ void MapDefLoader::load(json::loader::Context &ctx, Json::Value &value) {
   }
 }
 
-MapDefSaver::MapDefSaver(const def::MapDef &map, AuxData &aux)
-    : map_(map), aux_(aux) {}
+MapDefSaver::MapDefSaver(const def::MapDef &map, AuxData &aux,
+                         const std::string &map_filename)
+    : map_(map), aux_(aux),
+      map_filename_(map_filename.empty() ? "map.png" : map_filename) {}
 
 void MapDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   aux_.logger.info("Saving map definition...");
@@ -191,7 +193,7 @@ void MapDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
       png::encode_rgb8(image_data, aux_.logger.make_child_logger("png-encode"));
 
   json::saver::save_binary(ctx, value, "grid", png_data.data(), png_data.size(),
-                           "map.png");
+                           map_filename_.c_str());
 }
 
 } // namespace freeisle::state::serialize

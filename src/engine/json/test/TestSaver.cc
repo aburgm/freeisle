@@ -298,7 +298,7 @@ TEST(Saver, BinaryInline) {
   freeisle::json::test::check(result, expected);
 }
 
-TEST(Saver, BinaryExternal) {
+TEST_F(SaverFileTest, BinaryExternal) {
   BinaryHandler handler{.data = {240, 122, 1, 49}};
 
   freeisle::json::saver::save_root_object("test.json", handler, nullptr);

@@ -64,13 +64,15 @@ private:
 
 class MapDefSaver {
 public:
-  MapDefSaver(const def::MapDef &map, AuxData &aux);
+  MapDefSaver(const def::MapDef &map, AuxData &aux,
+              const std::string &map_filename);
 
   void save(json::saver::Context &ctx, Json::Value &value);
 
 private:
   const def::MapDef &map_;
   AuxData &aux_;
+  const std::string map_filename_;
 };
 
 } // namespace freeisle::state::serialize
