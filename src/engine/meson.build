@@ -12,4 +12,5 @@ subdir('png')
 subdir('json')
 
 # specific stuff
+subdir('def')
 subdir('state')

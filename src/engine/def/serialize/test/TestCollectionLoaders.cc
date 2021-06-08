@@ -1,4 +1,4 @@
-#include "state/serialize/CollectionLoaders.hh"
+#include "def/serialize/CollectionLoaders.hh"
 
 #include "def/Collection.hh"
 
@@ -50,19 +50,19 @@ struct ObjectsLoader {
     ObjectHandler object_loader;
     ObjectNumberHandler object_number_loader;
 
-    freeisle::state::serialize::CollectionLoader<Object, ObjectHandler>
+    freeisle::def::serialize::CollectionLoader<Object, ObjectHandler>
         objects_loader(objects.objects, object_loader);
-    freeisle::state::serialize::RefMapLoader<Object, uint32_t,
-                                             ObjectNumberHandler>
+    freeisle::def::serialize::RefMapLoader<Object, uint32_t,
+                                           ObjectNumberHandler>
         refmap_loader(objects.object_numbers, objects.objects,
                       object_number_loader);
 
     freeisle::json::loader::load_object(ctx, value, "objects", objects_loader);
-    objects.some_object = freeisle::state::serialize::load_ref(
+    objects.some_object = freeisle::def::serialize::load_ref(
         ctx, value, "some_object", objects.objects);
     freeisle::json::loader::load_object(ctx, value, "object_numbers",
                                         refmap_loader);
-    objects.subset = freeisle::state::serialize::load_ref_set(
+    objects.subset = freeisle::def::serialize::load_ref_set(
         ctx, value, "subset", objects.objects);
   }
 };

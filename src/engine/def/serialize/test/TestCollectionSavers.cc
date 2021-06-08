@@ -1,4 +1,4 @@
-#include "state/serialize/CollectionSavers.hh"
+#include "def/serialize/CollectionSavers.hh"
 
 #include "def/Collection.hh"
 
@@ -50,20 +50,19 @@ struct ObjectsSaver {
     ObjectHandler object_saver;
     ObjectNumberHandler object_number_saver;
 
-    freeisle::state::serialize::CollectionSaver<Object, ObjectHandler>
+    freeisle::def::serialize::CollectionSaver<Object, ObjectHandler>
         objects_saver(objects.objects, object_saver);
-    freeisle::state::serialize::RefMapSaver<Object, uint32_t,
-                                            ObjectNumberHandler>
+    freeisle::def::serialize::RefMapSaver<Object, uint32_t, ObjectNumberHandler>
         refmap_saver(objects.object_numbers, objects.objects,
                      object_number_saver);
 
     freeisle::json::saver::save_object(ctx, value, "objects", objects_saver);
-    freeisle::state::serialize::save_ref(ctx, value, "some_object",
-                                         objects.some_object, objects.objects);
+    freeisle::def::serialize::save_ref(ctx, value, "some_object",
+                                       objects.some_object, objects.objects);
     freeisle::json::saver::save_object(ctx, value, "object_numbers",
                                        refmap_saver);
-    freeisle::state::serialize::save_ref_set(ctx, value, "subset",
-                                             objects.subset, objects.objects);
+    freeisle::def::serialize::save_ref_set(ctx, value, "subset", objects.subset,
+                                           objects.objects);
   }
 };
 

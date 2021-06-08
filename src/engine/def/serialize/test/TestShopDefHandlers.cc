@@ -1,4 +1,4 @@
-#include "state/serialize/ShopDefHandlers.hh"
+#include "def/serialize/ShopDefHandlers.hh"
 
 #include "fs/Path.hh"
 
@@ -13,7 +13,7 @@ public:
   TestShopDefHandlers() : aux{system.logger} {}
 
   freeisle::log::test::System system;
-  freeisle::state::serialize::AuxData aux;
+  freeisle::def::serialize::AuxData aux;
 };
 
 TEST_F(TestShopDefHandlers, Load) {
@@ -31,7 +31,7 @@ TEST_F(TestShopDefHandlers, Load) {
   ASSERT_NE(grunt, unit_defs.end());
 
   freeisle::def::ShopDef shop;
-  freeisle::state::serialize::ShopDefLoader loader(map, unit_defs, aux);
+  freeisle::def::serialize::ShopDefLoader loader(map, unit_defs, aux);
   loader.set(shop);
 
   freeisle::json::loader::load_root_object("data/shop_fayetteville.json",
@@ -64,7 +64,7 @@ TEST_F(TestShopDefHandlers, LoadInvalidLocation) {
   ASSERT_NE(grunt, unit_defs.end());
 
   freeisle::def::ShopDef shop;
-  freeisle::state::serialize::ShopDefLoader loader(map, unit_defs, aux);
+  freeisle::def::serialize::ShopDefLoader loader(map, unit_defs, aux);
   loader.set(shop);
 
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(
@@ -98,7 +98,7 @@ TEST_F(TestShopDefHandlers, Save) {
       .production_list = {grunt},
       .location = {.x = 4, .y = 3}};
 
-  freeisle::state::serialize::ShopDefSaver saver(unit_defs, aux);
+  freeisle::def::serialize::ShopDefSaver saver(unit_defs, aux);
   saver.set(shop);
 
   const std::vector<uint8_t> result =

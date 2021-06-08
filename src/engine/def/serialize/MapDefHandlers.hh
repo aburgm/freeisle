@@ -1,14 +1,14 @@
 #pragma once
 
-#include "state/serialize/AuxData.hh"
-#include "state/serialize/CollectionLoaders.hh"
+#include "def/serialize/AuxData.hh"
+#include "def/serialize/CollectionLoaders.hh"
 
 #include "json/LoadUtil.hh"
 #include "json/SaveUtil.hh"
 
 #include "def/MapDef.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 class DecorationDefLoader {
 public:
@@ -75,4 +75,4 @@ private:
   const std::string map_filename_;
 };
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

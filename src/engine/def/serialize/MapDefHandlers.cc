@@ -1,6 +1,6 @@
-#include "state/serialize/MapDefHandlers.hh"
+#include "def/serialize/MapDefHandlers.hh"
 
-#include "state/serialize/CollectionSavers.hh"
+#include "def/serialize/CollectionSavers.hh"
 
 #include "json/LoadUtil.hh"
 #include "json/SaveUtil.hh"
@@ -9,7 +9,7 @@
 
 #include "png/Png.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 DecorationDefLoader::DecorationDefLoader(
     std::map<uint32_t, const def::DecorationDef *> &indices)
@@ -196,4 +196,4 @@ void MapDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
                            map_filename_.c_str());
 }
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

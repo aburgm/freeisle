@@ -1,10 +1,10 @@
-#include "state/serialize/MapDefHandlers.hh"
+#include "def/serialize/MapDefHandlers.hh"
 
 #include "base64/Base64.hh"
+#include "def/serialize/AuxData.hh"
 #include "fs/Path.hh"
 #include "log/Sink.hh"
 #include "log/System.hh"
-#include "state/serialize/AuxData.hh"
 #include "time/Clock.hh"
 #include "json/Saver.hh"
 #include "json/test/Util.hh"
@@ -20,7 +20,7 @@ public:
   TestMapDefHandlers() : aux{system.logger} {}
 
   freeisle::log::test::System system;
-  freeisle::state::serialize::AuxData aux;
+  freeisle::def::serialize::AuxData aux;
 };
 
 TEST_F(TestMapDefHandlers, LoadEmpty5x5) {
@@ -32,7 +32,7 @@ TEST_F(TestMapDefHandlers, LoadEmpty5x5) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
   freeisle::json::loader::load_root_object(data, loader);
 
   ASSERT_EQ(map.decoration_defs.size(), 1);
@@ -59,7 +59,7 @@ TEST_F(TestMapDefHandlers, LoadEmpty5x5FromFile) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
 
   std::string source = freeisle::fs::path::join(orig_directory, "bla.json");
   std::pair<freeisle::json::loader::Context, Json::Value> pair =
@@ -92,7 +92,7 @@ TEST_F(TestMapDefHandlers, LoadVarying4x4) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
   freeisle::json::loader::load_root_object(data, loader);
 
   ASSERT_EQ(map.decoration_defs.size(), 2);
@@ -154,7 +154,7 @@ TEST_F(TestMapDefHandlers, LoadCorruptPNG) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(data, loader),
                          freeisle::json::loader::Error) {
     EXPECT_EQ(e.message(), "Not a PNG file");
@@ -173,7 +173,7 @@ TEST_F(TestMapDefHandlers, LoadUndefinedIndex) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(data, loader),
                          freeisle::json::loader::Error) {
     EXPECT_EQ(e.message(),
@@ -193,7 +193,7 @@ TEST_F(TestMapDefHandlers, LoadDuplicateIndex) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(data, loader),
                          freeisle::json::loader::Error) {
     EXPECT_EQ(e.message(), "Duplicate index");
@@ -213,7 +213,7 @@ TEST_F(TestMapDefHandlers, LoadIndex0) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(data, loader),
                          freeisle::json::loader::Error) {
     EXPECT_EQ(e.message(), "Index 0 is not allowed");
@@ -233,7 +233,7 @@ TEST_F(TestMapDefHandlers, LoadTooHighIndex) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(data, loader),
                          freeisle::json::loader::Error) {
     EXPECT_EQ(e.message(), "Index 256 or greater not allowed");
@@ -250,7 +250,7 @@ TEST_F(TestMapDefHandlers, LoadAbsolutePath) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
 
   std::string source = freeisle::fs::path::join(orig_directory, "bla.json");
   std::pair<freeisle::json::loader::Context, Json::Value> pair =
@@ -271,7 +271,7 @@ TEST_F(TestMapDefHandlers, LoadInvalidBaseTerrain) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
 
   std::string source = freeisle::fs::path::join(orig_directory, "bla.json");
   std::pair<freeisle::json::loader::Context, Json::Value> pair =
@@ -293,7 +293,7 @@ TEST_F(TestMapDefHandlers, LoadInvalidOverlayTerrain) {
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
-  freeisle::state::serialize::MapDefLoader loader(map, aux);
+  freeisle::def::serialize::MapDefLoader loader(map, aux);
 
   std::string source = freeisle::fs::path::join(orig_directory, "bla.json");
   std::pair<freeisle::json::loader::Context, Json::Value> pair =
@@ -314,7 +314,7 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5) {
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5),
   };
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
+  freeisle::def::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.include_map = include_map};
@@ -340,7 +340,7 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5ToFile) {
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5),
   };
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
+  freeisle::def::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.path = "save.json",
@@ -403,7 +403,7 @@ TEST_F(TestMapDefHandlers, SaveVarying4x4) {
   map.grid(0, 3).decoration = &map.decoration_defs.find("obj001")->second;
   map.grid(2, 1).decoration = &map.decoration_defs.find("obj002")->second;
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
+  freeisle::def::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.include_map = include_map};
@@ -431,7 +431,7 @@ TEST_F(TestMapDefHandlers, SaveTooManyDecorations) {
         freeisle::def::DecorationDef{.name = fmt::format("deco{}", i)};
   }
 
-  freeisle::state::serialize::MapDefSaver saver(map, aux, "");
+  freeisle::def::serialize::MapDefSaver saver(map, aux, "");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.include_map = include_map};

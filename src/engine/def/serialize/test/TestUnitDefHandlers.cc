@@ -1,4 +1,4 @@
-#include "state/serialize/UnitDefHandlers.hh"
+#include "def/serialize/UnitDefHandlers.hh"
 
 #include "core/test/util/Util.hh"
 #include "log/test/util/System.hh"
@@ -15,12 +15,12 @@ public:
   TestUnitDefHandlers() : aux{system.logger} {}
 
   freeisle::log::test::System system;
-  freeisle::state::serialize::AuxData aux;
+  freeisle::def::serialize::AuxData aux;
 };
 
 TEST_F(TestUnitDefHandlers, Load) {
   freeisle::def::UnitDef unit;
-  freeisle::state::serialize::UnitDefLoader loader(aux);
+  freeisle::def::serialize::UnitDefLoader loader(aux);
   loader.set(unit);
   freeisle::json::loader::load_root_object("data/unit_grunt.json", loader);
 
@@ -152,7 +152,7 @@ TEST_F(TestUnitDefHandlers, Save) {
   unit.view_range = 4;
   unit.jamming_range = 1;
 
-  freeisle::state::serialize::UnitDefSaver saver(aux);
+  freeisle::def::serialize::UnitDefSaver saver(aux);
   saver.set(unit);
 
   const std::vector<uint8_t> result =

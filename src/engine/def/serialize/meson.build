@@ -1,5 +1,5 @@
-serialize_lib = static_library(
-  'serialize', [
+def_serialize_lib = static_library(
+  'def_serialize', [
     'MapDefHandlers.cc',
     'ScenarioHandlers.cc',
     'ShopDefHandlers.cc',
@@ -9,8 +9,8 @@ serialize_lib = static_library(
   link_with : [png_lib, log_lib],
   include_directories : engine)
 
-serialize_dep = declare_dependency(
-  link_with : serialize_lib,
+def_serialize_dep = declare_dependency(
+  link_with : def_serialize_lib,
   dependencies: [json_dep]
 )
 

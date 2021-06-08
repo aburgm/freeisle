@@ -1,12 +1,12 @@
-#include "state/serialize/ShopDefHandlers.hh"
+#include "def/serialize/ShopDefHandlers.hh"
 
-#include "state/serialize/CollectionLoaders.hh"
-#include "state/serialize/CollectionSavers.hh"
-#include "state/serialize/UnitDefHandlers.hh"
+#include "def/serialize/CollectionLoaders.hh"
+#include "def/serialize/CollectionSavers.hh"
+#include "def/serialize/UnitDefHandlers.hh"
 
 #include <fmt/format.h>
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 LocationLoader::LocationLoader(def::Location &loc, const def::MapDef &map)
     : loc_(loc), map_(map) {}
@@ -73,4 +73,4 @@ void ShopDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   json::saver::save_object(ctx, value, "location", location);
 }
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

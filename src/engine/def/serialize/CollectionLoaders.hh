@@ -5,7 +5,7 @@
 
 #include "def/Collection.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 /**
  * Loads a def::Collection of objects of type T. It expects a JSON object
@@ -148,4 +148,4 @@ def::RefSet<T> load_ref_set(json::loader::Context &ctx, Json::Value &value,
   return result;
 }
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

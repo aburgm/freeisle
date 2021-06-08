@@ -1,14 +1,14 @@
-#include "state/serialize/ScenarioHandlers.hh"
+#include "def/serialize/ScenarioHandlers.hh"
 
-#include "state/serialize/CollectionLoaders.hh"
-#include "state/serialize/CollectionSavers.hh"
-#include "state/serialize/MapDefHandlers.hh"
-#include "state/serialize/ShopDefHandlers.hh"
-#include "state/serialize/UnitDefHandlers.hh"
+#include "def/serialize/CollectionLoaders.hh"
+#include "def/serialize/CollectionSavers.hh"
+#include "def/serialize/MapDefHandlers.hh"
+#include "def/serialize/ShopDefHandlers.hh"
+#include "def/serialize/UnitDefHandlers.hh"
 
 #include <fmt/format.h>
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 ScenarioLoader::ScenarioLoader(def::Scenario &scenario, AuxData &aux)
     : scenario_(&scenario), aux_(aux) {}
@@ -50,4 +50,4 @@ void ScenarioSaver::save(json::saver::Context &ctx, Json::Value &value) {
   json::saver::save_object(ctx, value, "shops", shop_saver);
 }
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

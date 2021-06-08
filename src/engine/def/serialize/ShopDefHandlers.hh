@@ -1,6 +1,6 @@
 #pragma once
 
-#include "state/serialize/AuxData.hh"
+#include "def/serialize/AuxData.hh"
 
 #include "json/Loader.hh"
 #include "json/Saver.hh"
@@ -9,7 +9,7 @@
 #include "def/MapDef.hh"
 #include "def/ShopDef.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 class LocationLoader {
 public:
@@ -60,4 +60,4 @@ private:
   AuxData &aux_;
 };
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

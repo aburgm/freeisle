@@ -8,7 +8,7 @@ t = executable(
     'TestShopDefHandlers.cc',
     'TestUnitDefHandlers.cc',
   ],
-  dependencies : [serialize_dep, gtest],
+  dependencies : [def_serialize_dep, gtest],
   include_directories : engine)
 
-test('serialize', t, workdir : meson.current_source_dir())
+test('def_serialize', t, workdir : meson.current_source_dir())

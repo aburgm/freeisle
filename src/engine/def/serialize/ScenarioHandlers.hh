@@ -1,13 +1,13 @@
 #pragma once
 
-#include "state/serialize/AuxData.hh"
+#include "def/serialize/AuxData.hh"
 
 #include "json/Loader.hh"
 #include "json/Saver.hh"
 
 #include "def/Scenario.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 class ScenarioLoader {
 public:
@@ -33,4 +33,4 @@ private:
   const std::string map_filename_;
 };
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

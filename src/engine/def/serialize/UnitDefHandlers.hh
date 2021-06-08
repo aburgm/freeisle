@@ -1,13 +1,13 @@
 #pragma once
 
-#include "state/serialize/AuxData.hh"
+#include "def/serialize/AuxData.hh"
 
 #include "json/LoadUtil.hh"
 #include "json/SaveUtil.hh"
 
 #include "def/UnitDef.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 class ResupplyLoader {
 public:
@@ -96,4 +96,4 @@ private:
   const def::UnitDef *unit_;
 };
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize

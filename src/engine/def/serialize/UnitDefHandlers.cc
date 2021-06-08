@@ -1,9 +1,9 @@
-#include "state/serialize/UnitDefHandlers.hh"
+#include "def/serialize/UnitDefHandlers.hh"
 
-#include "state/serialize/CollectionLoaders.hh"
-#include "state/serialize/CollectionSavers.hh"
+#include "def/serialize/CollectionLoaders.hh"
+#include "def/serialize/CollectionSavers.hh"
 
-namespace freeisle::state::serialize {
+namespace freeisle::def::serialize {
 
 void ResupplyLoader::load(json::loader::Context &ctx, Json::Value &value) {
   json::loader::EnumMapLoader<uint32_t, def::DamageType> ammo(
@@ -133,4 +133,4 @@ void UnitDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   json::saver::save(ctx, value, "jamming_range", unit_->jamming_range);
 }
 
-} // namespace freeisle::state::serialize
+} // namespace freeisle::def::serialize
