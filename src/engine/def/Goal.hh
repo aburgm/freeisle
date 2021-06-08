@@ -22,4 +22,10 @@ enum class Goal {
   EliminateCaptain,
 };
 
+constexpr core::EnumEntry<Goal> Goals[] = {
+    {Goal::ConquerHq, "conquer_hq"},
+    {Goal::EliminatePlayer, "eliminate_player"},
+    {Goal::EliminateCaptain, "eliminate_captain"},
+};
+
 } // namespace freeisle::def

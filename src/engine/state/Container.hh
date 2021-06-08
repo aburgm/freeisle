@@ -15,13 +15,6 @@ struct Unit; // Need forward decl to break cyclic dependency since units can be
  * in a container.
  */
 struct Container {
-  // not copyable due to references to other objects
-  Container(const Container &) = delete;
-  Container(Container &&) = delete;
-
-  Container &operator=(const Container &) = delete;
-  Container &operator=(Container &&) = delete;
-
   /**
    * Container definition specifying what is allowed to
    * be contained in this container.

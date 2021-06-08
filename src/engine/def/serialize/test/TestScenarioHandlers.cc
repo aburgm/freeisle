@@ -2,7 +2,6 @@
 
 #include "fs/Path.hh"
 
-//#include "core/test/util/Util.hh"
 #include "fs/test/util/TempDirFixture.hh"
 #include "log/test/util/System.hh"
 #include "json/test/Util.hh"

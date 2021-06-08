@@ -19,25 +19,20 @@ struct Unit;
  * Represents a player taking part in the game.
  */
 struct Player {
-  // not copyable due to references to other objects
-  Player(const Player &) = delete;
-  Player(Player &&) = delete;
-
-  Player &operator=(const Player &) = delete;
-  Player &operator=(Player &&) = delete;
-
   /**
    * Fog of war information for a particular tile.
    */
   struct Fow {
     /**
-     * Whether a hex is discovered or discovered.
+     * Whether a hex is discovered or obscured.
      */
     bool discovered;
 
     /**
      * Current view factors. Own units in the vicinity increase the view
      * factor, while opposing units may decrease it (jamming).
+     *
+     * (no-save)
      */
     int32_t view;
   };
@@ -55,7 +50,7 @@ struct Player {
   /**
    * Team that this player is in, or null if they are not in any team.
    */
-  def::Ref<Team> team;
+  def::NullableRef<Team> team;
 
   /**
    * fog of war (fow) state for this player.
@@ -69,25 +64,29 @@ struct Player {
 
   /**
    * Unit designated as the captain for this player, or null if there is no
-   * such unit. The unit must have the isCaptain flag set.
+   * such unit.
+   *
+   * (delay-load)
    */
-  def::Ref<Unit> captain;
-
-  /**
-   * List of all units of this player.
-   */
-  std::list<def::Ref<Unit>> units;
+  def::NullableRef<Unit> captain;
 
   /**
    * Lose conditions for this player. If any of them is fulfilled, the player
    * loses the game immediately and is eliminated.
    */
-  core::Bitmask<def::Goal> loseConditions;
+  core::Bitmask<def::Goal> lose_conditions;
 
   /**
    * Whether this player has been eliminated or is still actively playing.
    */
-  bool isEliminated;
+  bool is_eliminated;
+
+  /**
+   * List of all units of this player.
+   *
+   * (no-save)
+   */
+  def::RefSet<Unit> units;
 };
 
 } // namespace freeisle::state

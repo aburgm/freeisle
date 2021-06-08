@@ -48,6 +48,51 @@ private:
 };
 
 /**
+ * A simple child handler which does not populate the child objects, if
+ * in conjunction with a CollectionLoader, it will cause the collection to
+ * be populated with empty objects.
+ */
+template <typename T> class EmptyChildHandler {
+public:
+  void set(T &obj) {}
+  void load(json::loader::Context &ctx, Json::Value &value) {}
+};
+
+/**
+ * A shortcut for a CollectionLoader with an empty child handler. This can
+ * be useful when loading the actual information into the objects later
+ * with CollectionLoaderPass. It can be used to load objects with cyclic
+ * references.
+ */
+template <typename T>
+using EmptyCollectionLoader = CollectionLoader<T, EmptyChildHandler<T>>;
+
+/**
+ * For a given def::Collection of type T, loads additional information from
+ * a JSON object which is expected to contain a subset of the objects present
+ * in the collection.
+ */
+template <typename T, typename ChildHandlerT> class CollectionLoaderPass {
+public:
+  CollectionLoaderPass(def::Collection<T> &collection,
+                       ChildHandlerT child_handler = ChildHandlerT{})
+      : collection_(&collection), child_handler_(child_handler) {}
+
+  void load(json::loader::Context &ctx, Json::Value &value) {
+    for (typename def::Collection<T>::iterator iter = collection_->begin();
+         iter != collection_->end(); ++iter) {
+      child_handler_.set(iter->second);
+      json::loader::load_object(ctx, value, iter->first.c_str(),
+                                child_handler_);
+    }
+  }
+
+private:
+  def::Collection<T> *collection_;
+  ChildHandlerT child_handler_;
+};
+
+/**
  * Loads an object reference from a JSON object. In the JSON document, the
  * value with the given key is expected to be a string denoting the object ID.
  */

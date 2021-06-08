@@ -1,5 +1,5 @@
 t = executable(
-  'serialize_test',
+  'def_serialize_test',
   [
     'TestCollectionLoaders.cc',
     'TestCollectionSavers.cc',
