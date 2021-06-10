@@ -56,7 +56,7 @@ void PlayerLoader::load(json::loader::Context &ctx, Json::Value &value) {
 
   player_->name = json::loader::load<std::string>(ctx, value, "name");
   json::loader::load_object(ctx, value, "color", color);
-  player_->team = def::serialize::load_ref(ctx, value, "team", teams_);
+  player_->team = def::serialize::load_nullable_ref(ctx, value, "team", teams_);
 
   const uint32_t expected_size =
       (map_.grid.width() * map_.grid.height() + 7) / 8;
@@ -80,12 +80,13 @@ void PlayerLoader::load(json::loader::Context &ctx, Json::Value &value) {
   }
 
   player_->wealth = json::loader::load<uint32_t>(ctx, value, "wealth");
-  player_->captain = def::serialize::load_ref(ctx, value, "captain", units_);
+  player_->captain =
+      def::serialize::load_nullable_ref(ctx, value, "captain", units_);
   if (player_->captain) {
     if (!player_->captain->owner || &*player_->captain->owner != player_) {
       throw json::loader::Error::create(
           ctx, "captain", value["captain"],
-          "Unit declared has captain has different owner");
+          "Unit declared as captain has different owner");
     }
   }
 

@@ -2,6 +2,7 @@ t = executable(
   'state_serialize_test',
   [
     'TestPlayerHandlers.cc',
+    'TestShopHandlers.cc',
   ],
   dependencies : [state_serialize_dep, gtest],
   include_directories : engine)

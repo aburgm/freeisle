@@ -20,23 +20,23 @@ struct Map {
     /**
      * Which unit is on the surface (or in the air) of this hex, if any.
      */
-    def::Ref<Unit> surfaceUnit;
+    def::NullableRef<Unit> surface_unit;
 
     /**
      * Which unit is below the surface (under water) on this hex, if any.
      */
-    def::Ref<Unit> subSurfaceUnit;
+    def::NullableRef<Unit> subsurface_unit;
 
     /**
      * Which shop is on this hex, if any.
      */
-    def::Ref<Shop> shop;
+    def::NullableRef<Shop> shop;
   };
 
   /**
    * Map definition.
    */
-  const MapDef *def;
+  const def::MapDef *def;
 
   /**
    * Grid with information for all hex tiles.

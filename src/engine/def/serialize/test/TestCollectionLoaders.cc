@@ -59,7 +59,7 @@ struct ObjectsLoader {
 
     freeisle::json::loader::load_object(ctx, value, "objects", objects_loader);
     freeisle::def::NullableRef<Object> some_object =
-        freeisle::def::serialize::load_ref(ctx, value, "some_object",
+        freeisle::def::serialize::load_nullable_ref(ctx, value, "some_object",
                                            objects.objects);
     freeisle::json::loader::load_object(ctx, value, "object_numbers",
                                         refmap_loader);
@@ -95,7 +95,7 @@ struct DelayedObjectsLoader {
     freeisle::json::loader::load_object(ctx, value, "objects", empty);
     freeisle::json::loader::load_object(ctx, value, "objects", objects_loader);
 
-    objects.some_object = freeisle::def::serialize::load_ref(
+    objects.some_object = freeisle::def::serialize::load_nullable_ref(
         ctx, value, "some_object", objects.objects);
     freeisle::json::loader::load_object(ctx, value, "object_numbers",
                                         refmap_loader);
