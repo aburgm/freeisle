@@ -1,0 +1,14 @@
+{
+  "name": "Rose",
+  "color": {
+    "red": 100,
+    "green": 50,
+    "blue": 10
+  },
+  "team": "south",
+  "fow": "fow.1.bin",
+  "wealth": 1000,
+  "captain": "unit003",
+  "lose_conditions": ["conquer_hq", "eliminate_captain"],
+  "is_eliminated": false
+}

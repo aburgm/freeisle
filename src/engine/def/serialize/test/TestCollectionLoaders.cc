@@ -67,6 +67,34 @@ struct ObjectsLoader {
   }
 };
 
+struct DelayedObjectsLoader {
+  Objects &objects;
+
+  void load(freeisle::json::loader::Context &ctx, Json::Value &value) {
+    ObjectHandler object_loader;
+    ObjectNumberHandler object_number_loader;
+
+    freeisle::def::serialize::EmptyCollectionLoader<Object> empty(
+        objects.objects);
+    freeisle::def::serialize::CollectionLoaderPass<Object, ObjectHandler>
+        objects_loader(objects.objects, object_loader);
+    freeisle::def::serialize::RefMapLoader<Object, uint32_t,
+                                           ObjectNumberHandler>
+        refmap_loader(objects.object_numbers, objects.objects,
+                      object_number_loader);
+
+    freeisle::json::loader::load_object(ctx, value, "objects", empty);
+    freeisle::json::loader::load_object(ctx, value, "objects", objects_loader);
+
+    objects.some_object = freeisle::def::serialize::load_ref(
+        ctx, value, "some_object", objects.objects);
+    freeisle::json::loader::load_object(ctx, value, "object_numbers",
+                                        refmap_loader);
+    objects.subset = freeisle::def::serialize::load_ref_set(
+        ctx, value, "subset", objects.objects);
+  }
+};
+
 } // namespace
 
 TEST(CollectionLoader, Empty) {
@@ -118,6 +146,49 @@ TEST(CollectionLoader, OneObject) {
 TEST(CollectionLoader, TwoObjects) {
   Objects objects{};
   ObjectsLoader loader{objects};
+
+  const std::string text =
+      "{\"objects\": {\"mine\": {\"name\": \"my object\"}, \"yours\": "
+      "{\"name\": \"your object\"}}, \"some_object\": \"yours\", "
+      "\"object_numbers\": {\"mine\": {\"number\": 55}, \"yours\": "
+      "{\"number\": 33}}, \"subset\": [\"mine\"]}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  freeisle::json::loader::load_root_object(data, loader);
+
+  ASSERT_EQ(objects.objects.size(), 2);
+  const freeisle::def::Collection<Object>::iterator mine_iter =
+      objects.objects.find("mine");
+  ASSERT_NE(mine_iter, objects.objects.end());
+  const freeisle::def::Collection<Object>::iterator yours_iter =
+      objects.objects.find("yours");
+  ASSERT_NE(yours_iter, objects.objects.end());
+
+  EXPECT_EQ(mine_iter->first, "mine");
+  EXPECT_EQ(mine_iter->second.name, "my object");
+  EXPECT_EQ(yours_iter->first, "yours");
+  EXPECT_EQ(yours_iter->second.name, "your object");
+
+  EXPECT_EQ(&**objects.some_object, &yours_iter->second);
+
+  EXPECT_EQ(objects.object_numbers.size(), 2);
+  const freeisle::def::RefMap<Object, uint32_t>::iterator mine_number_iter =
+      objects.object_numbers.find(mine_iter);
+  ASSERT_NE(mine_number_iter, objects.object_numbers.end());
+  const freeisle::def::RefMap<Object, uint32_t>::iterator yours_number_iter =
+      objects.object_numbers.find(yours_iter);
+  ASSERT_NE(yours_number_iter, objects.object_numbers.end());
+  EXPECT_EQ(mine_number_iter->second, 55);
+  EXPECT_EQ(yours_number_iter->second, 33);
+
+  ASSERT_EQ(objects.subset.size(), 1);
+  EXPECT_EQ(objects.subset.count(mine_iter), 1);
+  EXPECT_EQ(objects.subset.count(yours_iter), 0);
+}
+
+TEST(CollectionLoader, TwoObjectsDelayLoad) {
+  Objects objects{};
+  DelayedObjectsLoader loader{objects};
 
   const std::string text =
       "{\"objects\": {\"mine\": {\"name\": \"my object\"}, \"yours\": "

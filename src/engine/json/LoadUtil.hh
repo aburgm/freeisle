@@ -19,6 +19,7 @@ namespace freeisle::json::loader {
  */
 template <typename T> inline T as(const Json::Value &value);
 template <> inline uint32_t as(const Json::Value &val) { return val.asUInt(); }
+template <> inline uint8_t as(const Json::Value &val) { return val.asUInt(); }
 template <> inline float as(const Json::Value &val) { return val.asFloat(); }
 template <> inline bool as(const Json::Value &val) { return val.asBool(); }
 template <> inline std::string as(const Json::Value &val) {

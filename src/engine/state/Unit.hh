@@ -27,22 +27,16 @@ struct Unit {
     uint32_t hexesMoved;
   };
 
-  // not copyable due to references to other objects
-  Unit(const Unit &) = delete;
-  Unit(Unit &&) = delete;
-
-  Unit &operator=(const Unit &) = delete;
-  Unit &operator=(Unit &&) = delete;
-
   /**
    * Unit definition with all static unit information.
    */
   const def::UnitDef *def;
 
   /**
-   * Player who controls this unit.
+   * Player who controls this unit. If not set, the unit is not actively
+   * controlled.
    */
-  def::Ref<Player> owner;
+  def::NullableRef<Player> owner;
 
   /**
    * Current location of the unit on the map.
@@ -112,12 +106,12 @@ struct Unit {
   /**
    * Pointer to the unit that is transporting this unit, if any.
    */
-  def::Ref<Unit> containedInUnit;
+  def::NullableRef<Unit> containedInUnit;
 
   /**
    * Pointer to the shop that this unit is inside, if any.
    */
-  def::Ref<Shop> containedInShop;
+  def::NullableRef<Shop> containedInShop;
 };
 
 } // namespace freeisle::state
