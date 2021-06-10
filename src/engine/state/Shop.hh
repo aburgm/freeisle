@@ -11,13 +11,6 @@ namespace freeisle::state {
  * Shop stores the state of a shope in the game.
  */
 struct Shop {
-  // not copyable due to references to other objects
-  Shop(const Shop &) = delete;
-  Shop(Shop &&) = delete;
-
-  Shop &operator=(const Shop &) = delete;
-  Shop &operator=(Shop &&) = delete;
-
   /**
    * Definition of this shop.
    */
@@ -27,7 +20,7 @@ struct Shop {
    * Player who owns the shop. The shop is generating income for this player,
    * and this player can produce units in the shop.
    */
-  def::Ref<Player> owner;
+  def::NullableRef<Player> owner;
 
   /**
    * State on which units are contained in the shop.

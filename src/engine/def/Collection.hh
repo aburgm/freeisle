@@ -83,7 +83,49 @@ private:
  * A reference to an object in a collection which is allowed to not point to
  * any object.
  */
-template <typename T> using NullableRef = std::optional<Ref<T>>;
+template <typename T> class NullableRef {
+public:
+  NullableRef() = default;
+  NullableRef(typename Collection<T>::iterator iter) : ref_(iter) {}
+  NullableRef(Ref<T> ref) : ref_(ref) {}
+
+  /**
+   * Returns whether the NullableRef points to a valid object or not.
+   */
+  explicit operator bool() const { return ref_.has_value(); }
+
+  /**
+   * Returns whether the NullableRef is invalid or not.
+   */
+  bool operator!() const { return !ref_.has_value(); }
+
+  /**
+   * Return the object ID of the referred object.
+   */
+  const std::string &id() const {
+    assert(ref_);
+    return ref_->id();
+  }
+
+  const T &operator*() const {
+    assert(ref_);
+    return **ref_;
+  }
+  const T *operator->() const {
+    assert(ref_);
+    return &**ref_;
+  }
+
+  /**
+   * Return a non-const reference to the referenced object. This is only
+   * safe if the caller can provide a reference to the (non-const) collection
+   * containing the referenced object.
+   */
+  T &get(Collection<T> &collection) { return ref_->get(collection); }
+
+private:
+  std::optional<Ref<T>> ref_;
+};
 
 /**
  * A RefMap is a mapping of object references to some type T. This is used

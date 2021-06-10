@@ -13,16 +13,6 @@ namespace freeisle::state {
  * Represents the entire game state.
  */
 struct State {
-  State() = default;
-
-  // TODO(armin): implement deep copy for AI
-  State(const State &) = delete;
-  State(State &&) = default; // I think this one works out of the box; pointers
-                             // will remain valid
-
-  State &operator=(const State &) = delete;
-  State &operator=(State &&) = delete;
-
   /**
    * Scenario that is being played.
    */

@@ -52,7 +52,7 @@ void save_ref(json::saver::Context &ctx, Json::Value &value, const char *key,
               const def::NullableRef<T> &ref,
               const def::Collection<T> &collection) {
   if (ref) {
-    json::saver::save(ctx, value, key, ref->id());
+    json::saver::save(ctx, value, key, ref.id());
   }
 }
 

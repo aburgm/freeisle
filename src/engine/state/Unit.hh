@@ -18,13 +18,13 @@ struct Unit {
    * the game, but might be interesting to look at.
    */
   struct Stats {
-    uint32_t hitsDelivered;
-    uint32_t hitsTaken;
+    uint32_t hits_delivered;
+    uint32_t hits_taken;
 
-    uint32_t damageTaken;
-    uint32_t damageCaused;
+    uint32_t damage_taken;
+    uint32_t damage_caused;
 
-    uint32_t hexesMoved;
+    uint32_t hexes_moved;
   };
 
   /**
@@ -80,12 +80,12 @@ struct Unit {
    * Whether the unit has performed an action (attack or supply) during
    * this turn.
    */
-  bool hasActioned;
+  bool has_actioned;
 
   /**
    * Whether the unit has soared (changed level) during this turn.
    */
-  bool hasSoared;
+  bool has_soared;
 
   /**
    * Supplies that this unit has left to supply other units with.
@@ -106,12 +106,12 @@ struct Unit {
   /**
    * Pointer to the unit that is transporting this unit, if any.
    */
-  def::NullableRef<Unit> containedInUnit;
+  def::NullableRef<Unit> contained_in_unit;
 
   /**
    * Pointer to the shop that this unit is inside, if any.
    */
-  def::NullableRef<Shop> containedInShop;
+  def::NullableRef<Shop> contained_in_shop;
 };
 
 } // namespace freeisle::state
