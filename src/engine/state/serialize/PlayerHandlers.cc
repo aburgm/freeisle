@@ -82,8 +82,7 @@ void PlayerLoader::load(json::loader::Context &ctx, Json::Value &value) {
   player_->wealth = json::loader::load<uint32_t>(ctx, value, "wealth");
   player_->captain = def::serialize::load_ref(ctx, value, "captain", units_);
   if (player_->captain) {
-    const def::Ref<state::Unit> captain = *player_->captain;
-    if (!captain->owner || &**captain->owner != player_) {
+    if (!player_->captain->owner || &*player_->captain->owner != player_) {
       throw json::loader::Error::create(
           ctx, "captain", value["captain"],
           "Unit declared has captain has different owner");
@@ -97,7 +96,7 @@ void PlayerLoader::load(json::loader::Context &ctx, Json::Value &value) {
 
   for (def::Collection<Unit>::iterator iter = units_.begin();
        iter != units_.end(); ++iter) {
-    if (iter->second.owner && &**iter->second.owner == player_) {
+    if (iter->second.owner && &*iter->second.owner == player_) {
       player_->units.insert(iter);
     }
   }

@@ -132,7 +132,7 @@ TEST(CollectionLoader, OneObject) {
   EXPECT_EQ(iter->first, "mine");
   EXPECT_EQ(iter->second.name, "my object");
 
-  EXPECT_EQ(&**objects.some_object, &iter->second);
+  EXPECT_EQ(&*objects.some_object, &iter->second);
 
   EXPECT_EQ(objects.object_numbers.size(), 1);
   const freeisle::def::RefMap<Object, uint32_t>::iterator iter2 =
@@ -169,7 +169,7 @@ TEST(CollectionLoader, TwoObjects) {
   EXPECT_EQ(yours_iter->first, "yours");
   EXPECT_EQ(yours_iter->second.name, "your object");
 
-  EXPECT_EQ(&**objects.some_object, &yours_iter->second);
+  EXPECT_EQ(&*objects.some_object, &yours_iter->second);
 
   EXPECT_EQ(objects.object_numbers.size(), 2);
   const freeisle::def::RefMap<Object, uint32_t>::iterator mine_number_iter =
@@ -212,7 +212,7 @@ TEST(CollectionLoader, TwoObjectsDelayLoad) {
   EXPECT_EQ(yours_iter->first, "yours");
   EXPECT_EQ(yours_iter->second.name, "your object");
 
-  EXPECT_EQ(&**objects.some_object, &yours_iter->second);
+  EXPECT_EQ(&*objects.some_object, &yours_iter->second);
 
   EXPECT_EQ(objects.object_numbers.size(), 2);
   const freeisle::def::RefMap<Object, uint32_t>::iterator mine_number_iter =

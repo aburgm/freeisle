@@ -84,7 +84,7 @@ TEST_F(TestPlayerHandlers, LoadPlayer) {
   EXPECT_EQ(player->color.g, 50);
   EXPECT_EQ(player->color.b, 10);
   ASSERT_TRUE(player->team);
-  EXPECT_EQ(&**player->team, &teams["south"]);
+  EXPECT_EQ(&*player->team, &teams["south"]);
   ASSERT_EQ(player->fow.width(), 5);
   ASSERT_EQ(player->fow.height(), 5);
 
@@ -96,7 +96,7 @@ TEST_F(TestPlayerHandlers, LoadPlayer) {
 
   EXPECT_EQ(player->wealth, 1000);
   ASSERT_TRUE(player->captain);
-  EXPECT_EQ(&**player->captain, &units["unit003"]);
+  EXPECT_EQ(&*player->captain, &units["unit003"]);
   EXPECT_EQ(player->lose_conditions,
             freeisle::core::Bitmask<freeisle::def::Goal>(
                 freeisle::def::Goal::ConquerHq,
