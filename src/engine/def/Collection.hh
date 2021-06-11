@@ -24,23 +24,29 @@ public:
    */
   Ref(typename Collection<T>::iterator iter) : iter(iter) {}
 
+  Ref(Ref &other) noexcept : iter(other.iter) {}
+  Ref(Ref &&other) noexcept : iter(other.iter) {}
+  Ref(const Ref &) = delete;
+
+  Ref &operator=(Ref<T> &other) noexcept {
+    iter = other.iter;
+    return *this;
+  }
+  Ref &operator=(Ref<T> &&other) noexcept {
+    iter = other.iter;
+    return *this;
+  }
+  Ref &operator=(const Ref<T> &) = delete;
+
   /**
    * Return the object ID of the referred object.
    */
   const std::string &id() const { return iter->first; }
 
+  T &operator*() { return iter->second; }
   const T &operator*() const { return iter->second; }
+  T *operator->() { return &iter->second; }
   const T *operator->() const { return &iter->second; }
-
-  /**
-   * Return a non-const reference to the referenced object. This is only
-   * safe if the caller can provide a reference to the (non-const) collection
-   * containing the referenced object.
-   */
-  T &get(Collection<T> &collection) {
-    assert(collection.find(iter->first) == iter);
-    return iter->second;
-  }
 
   /**
    * Compare to other references. A reference compares less than another
@@ -85,9 +91,9 @@ private:
  */
 template <typename T> class NullableRef {
 public:
-  NullableRef() = default;
-  NullableRef(typename Collection<T>::iterator iter) : ref_(iter) {}
-  NullableRef(Ref<T> ref) : ref_(ref) {}
+  NullableRef() noexcept = default;
+  NullableRef(typename Collection<T>::iterator iter) noexcept : ref_(iter) {}
+  NullableRef(Ref<T> ref) noexcept : ref_(std::move(ref)) {}
 
   /**
    * Returns whether the NullableRef points to a valid object or not.
@@ -142,5 +148,29 @@ using RefMap = std::map<Ref<C>, T, typename Ref<C>::Compare>;
  * collection.
  */
 template <typename T> using RefSet = std::set<Ref<T>, typename Ref<T>::Compare>;
+
+/**
+ * Create a collection from a fixed number of pairs. This can be used instead
+ * of construction with an initializer list if the type T is not
+ * copy-constructible.
+ */
+template <typename T, typename... Args>
+Collection<T> make_collection(Args &&... args) {
+  Collection<T> collection;
+  (collection.insert(std::forward<Args>(args)), ...);
+  return collection;
+}
+
+/**
+ * Create a refset from a fixed number of elements T. This can be used
+ * instead of construction with an initilalizer list if the type T is not
+ * copy-constructible.
+ */
+template <typename T, typename... Args>
+RefSet<T> make_ref_set(Args &&... args) {
+  RefSet<T> set;
+  (set.insert(std::forward<Args>(args)), ...);
+  return set;
+}
 
 } // namespace freeisle::def

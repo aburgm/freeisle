@@ -60,11 +60,11 @@ TEST_F(TestPlayerHandlers, LoadPlayer) {
 
   freeisle::def::Ref<freeisle::state::Player> player = players.begin();
 
-  freeisle::def::Collection<freeisle::state::Unit> units = {
-      {"unit001", freeisle::state::Unit{.owner = player}},
-      {"unit002", freeisle::state::Unit{}},
-      {"unit003", freeisle::state::Unit{.owner = player}},
-  };
+  freeisle::def::Collection<freeisle::state::Unit> units =
+      freeisle::def::make_collection<freeisle::state::Unit>(
+          std::make_pair("unit001", freeisle::state::Unit{.owner = player}),
+          std::make_pair("unit002", freeisle::state::Unit{}),
+          std::make_pair("unit003", freeisle::state::Unit{.owner = player}));
 
   freeisle::def::Collection<freeisle::state::Team> teams = {
       {"north", freeisle::state::Team{.name = "North"}},
@@ -72,7 +72,7 @@ TEST_F(TestPlayerHandlers, LoadPlayer) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(player.get(players));
+  loader.set(*player);
 
   freeisle::json::loader::load_root_object(
       freeisle::fs::path::join(orig_directory, "data", "player_rose.json")
@@ -117,11 +117,11 @@ TEST_F(TestPlayerHandlers, LoadPlayerTooLargeGridSize) {
 
   freeisle::def::Ref<freeisle::state::Player> player = players.begin();
 
-  freeisle::def::Collection<freeisle::state::Unit> units = {
-      {"unit001", freeisle::state::Unit{.owner = player}},
-      {"unit002", freeisle::state::Unit{}},
-      {"unit003", freeisle::state::Unit{.owner = player}},
-  };
+  freeisle::def::Collection<freeisle::state::Unit> units =
+      freeisle::def::make_collection<freeisle::state::Unit>(
+          std::make_pair("unit001", freeisle::state::Unit{.owner = player}),
+          std::make_pair("unit002", freeisle::state::Unit{}),
+          std::make_pair("unit003", freeisle::state::Unit{.owner = player}));
 
   freeisle::def::Collection<freeisle::state::Team> teams = {
       {"north", freeisle::state::Team{.name = "North"}},
@@ -129,7 +129,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerTooLargeGridSize) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(player.get(players));
+  loader.set(*player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -154,11 +154,11 @@ TEST_F(TestPlayerHandlers, LoadPlayerTooSmallGridSize) {
 
   freeisle::def::Ref<freeisle::state::Player> player = players.begin();
 
-  freeisle::def::Collection<freeisle::state::Unit> units = {
-      {"unit001", freeisle::state::Unit{.owner = player}},
-      {"unit002", freeisle::state::Unit{}},
-      {"unit003", freeisle::state::Unit{.owner = player}},
-  };
+  freeisle::def::Collection<freeisle::state::Unit> units =
+      freeisle::def::make_collection<freeisle::state::Unit>(
+          std::make_pair("unit001", freeisle::state::Unit{.owner = player}),
+          std::make_pair("unit002", freeisle::state::Unit{}),
+          std::make_pair("unit003", freeisle::state::Unit{.owner = player}));
 
   freeisle::def::Collection<freeisle::state::Team> teams = {
       {"north", freeisle::state::Team{.name = "North"}},
@@ -166,7 +166,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerTooSmallGridSize) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(player.get(players));
+  loader.set(*player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -191,11 +191,11 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainUnowned) {
 
   freeisle::def::Ref<freeisle::state::Player> player = players.begin();
 
-  freeisle::def::Collection<freeisle::state::Unit> units = {
-      {"unit001", freeisle::state::Unit{.owner = player}},
-      {"unit002", freeisle::state::Unit{}},
-      {"unit003", freeisle::state::Unit{}},
-  };
+  freeisle::def::Collection<freeisle::state::Unit> units =
+      freeisle::def::make_collection<freeisle::state::Unit>(
+          std::make_pair("unit001", freeisle::state::Unit{.owner = player}),
+          std::make_pair("unit002", freeisle::state::Unit{}),
+          std::make_pair("unit003", freeisle::state::Unit{}));
 
   freeisle::def::Collection<freeisle::state::Team> teams = {
       {"north", freeisle::state::Team{.name = "North"}},
@@ -203,7 +203,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainUnowned) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(player.get(players));
+  loader.set(*player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -228,11 +228,12 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainOtherPlayer) {
 
   freeisle::def::Ref<freeisle::state::Player> player = players.begin();
 
-  freeisle::def::Collection<freeisle::state::Unit> units = {
-      {"unit001", freeisle::state::Unit{.owner = player}},
-      {"unit002", freeisle::state::Unit{}},
-      {"unit003", freeisle::state::Unit{.owner = players.find("player2")}},
-  };
+  freeisle::def::Collection<freeisle::state::Unit> units =
+      freeisle::def::make_collection<freeisle::state::Unit>(
+          std::make_pair("unit001", freeisle::state::Unit{.owner = player}),
+          std::make_pair("unit002", freeisle::state::Unit{}),
+          std::make_pair("unit003", freeisle::state::Unit{
+                                        .owner = players.find("player2")}));
 
   freeisle::def::Collection<freeisle::state::Team> teams = {
       {"north", freeisle::state::Team{.name = "North"}},
@@ -240,7 +241,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainOtherPlayer) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(player.get(players));
+  loader.set(*player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -264,11 +265,11 @@ TEST_F(TestPlayerHandlers, SavePlayer) {
 
   freeisle::def::Ref<freeisle::state::Player> player = players.begin();
 
-  freeisle::def::Collection<freeisle::state::Unit> units = {
-      {"unit001", freeisle::state::Unit{.owner = player}},
-      {"unit002", freeisle::state::Unit{}},
-      {"unit003", freeisle::state::Unit{.owner = player}},
-  };
+  freeisle::def::Collection<freeisle::state::Unit> units =
+      freeisle::def::make_collection<freeisle::state::Unit>(
+          std::make_pair("unit001", freeisle::state::Unit{.owner = player}),
+          std::make_pair("unit002", freeisle::state::Unit{}),
+          std::make_pair("unit003", freeisle::state::Unit{.owner = player}));
 
   freeisle::def::Collection<freeisle::state::Team> teams = {
       {"north", freeisle::state::Team{.name = "North"}},
@@ -278,7 +279,7 @@ TEST_F(TestPlayerHandlers, SavePlayer) {
   freeisle::core::Grid<freeisle::state::Player::Fow> grid(5, 5);
   grid(4, 0).discovered = true;
 
-  player.get(players) = freeisle::state::Player{
+  *player = freeisle::state::Player{
       .name = "Rose",
       .color =
           {
@@ -293,7 +294,8 @@ TEST_F(TestPlayerHandlers, SavePlayer) {
       .lose_conditions = {freeisle::def::Goal::ConquerHq,
                           freeisle::def::Goal::EliminateCaptain},
       .is_eliminated = false,
-      .units = {units.find("unit001"), units.find("unit003")},
+      .units = freeisle::def::make_ref_set<freeisle::state::Unit>(
+          units.find("unit001"), units.find("unit003")),
   };
 
   freeisle::state::serialize::PlayerSaver saver(map, teams, units, aux);

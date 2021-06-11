@@ -1,6 +1,11 @@
 #pragma once
 
-#include "collection/Ref.hh"
+#include "def/Collection.hh"
+#include "def/MapDef.hh"
+
+#include "state/Unit.hh"
+
+#include "core/Grid.hh"
 
 namespace freeisle::state {
 
@@ -36,7 +41,7 @@ struct Map {
   /**
    * Grid with information for all hex tiles.
    */
-  Grid<Hex> grid;
+  core::Grid<Hex> grid;
 };
 
 } // namespace freeisle::state

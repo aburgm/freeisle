@@ -43,7 +43,8 @@ TEST_F(TestScenarioHandlers, Save) {
                   {{"obj001", freeisle::def::DecorationDef{.name = "flowers"}}},
               .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5)},
       .units = {{"grunt", freeisle::def::UnitDef{}}},
-      .shops = {{"fayetteville", freeisle::def::ShopDef{}}}};
+      .shops = freeisle::def::make_collection<freeisle::def::ShopDef>(
+          std::make_pair("fayetteville", freeisle::def::ShopDef{}))};
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map = {
       {".units.grunt",

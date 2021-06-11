@@ -95,7 +95,8 @@ TEST_F(TestShopDefHandlers, Save) {
       .container = {.max_units = 4,
                     .max_weight = 4000,
                     .supported_levels = freeisle::def::Level::Land},
-      .production_list = {grunt},
+      .production_list =
+          freeisle::def::make_ref_set<freeisle::def::UnitDef>(grunt),
       .location = {.x = 4, .y = 3}};
 
   freeisle::def::serialize::ShopDefSaver saver(unit_defs, aux);
