@@ -35,7 +35,7 @@ ShopDefLoader::ShopDefLoader(const def::MapDef &map,
                              AuxData &aux)
     : shop_(nullptr), map_(map), unit_defs_(unit_defs), aux_(aux) {}
 
-void ShopDefLoader::set(def::ShopDef &shop) { shop_ = &shop; }
+void ShopDefLoader::set(def::Ref<def::ShopDef> shop) { shop_ = &*shop; }
 
 void ShopDefLoader::load(json::loader::Context &ctx, Json::Value &value) {
   assert(shop_ != nullptr);
@@ -56,7 +56,7 @@ ShopDefSaver::ShopDefSaver(const def::Collection<def::UnitDef> &unit_defs,
                            AuxData &aux)
     : shop_(nullptr), unit_defs_(unit_defs), aux_(aux) {}
 
-void ShopDefSaver::set(const def::ShopDef &shop) { shop_ = &shop; }
+void ShopDefSaver::set(def::Ref<const def::ShopDef> shop) { shop_ = &*shop; }
 
 void ShopDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   assert(shop_ != nullptr);

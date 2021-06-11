@@ -15,7 +15,7 @@ DecorationDefLoader::DecorationDefLoader(
     std::map<uint32_t, const def::DecorationDef *> &indices)
     : def_(nullptr), indices(indices) {}
 
-void DecorationDefLoader::set(def::DecorationDef &def) { def_ = &def; }
+void DecorationDefLoader::set(def::Ref<DecorationDef> def) { def_ = &*def; }
 
 void DecorationDefLoader::load(json::loader::Context &ctx, Json::Value &value) {
   def_->name = json::loader::load<std::string>(ctx, value, "name");
@@ -44,7 +44,9 @@ DecorationDefSaver::DecorationDefSaver(
     std::map<const def::DecorationDef *, uint32_t> &reverse_index_map)
     : def_(nullptr), index_(0), reverse_index_map_(reverse_index_map) {}
 
-void DecorationDefSaver::set(const def::DecorationDef &def) { def_ = &def; }
+void DecorationDefSaver::set(def::Ref<const def::DecorationDef> def) {
+  def_ = &*def;
+}
 
 void DecorationDefSaver::save(json::saver::Context &ctx, Json::Value &value) {
   json::saver::save(ctx, value, "name", def_->name);

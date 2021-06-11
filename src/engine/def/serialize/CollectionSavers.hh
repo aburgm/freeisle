@@ -33,7 +33,7 @@ public:
     for (typename def::Collection<T>::const_iterator iter =
              collection_->begin();
          iter != collection_->end(); ++iter) {
-      child_handler_.set(iter->second);
+      child_handler_.set(iter);
       json::saver::save_object(ctx, value, iter->first.c_str(), child_handler_);
     }
   }

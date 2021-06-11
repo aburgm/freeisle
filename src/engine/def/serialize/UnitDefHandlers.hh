@@ -54,7 +54,7 @@ class WeaponDefLoader {
 public:
   WeaponDefLoader() : weapon_(nullptr) {}
 
-  void set(def::WeaponDef &def) { weapon_ = &def; }
+  void set(def::Ref<def::WeaponDef> def) { weapon_ = &*def; }
   void load(json::loader::Context &ctx, Json::Value &value);
 
 private:
@@ -65,7 +65,7 @@ class WeaponDefSaver {
 public:
   WeaponDefSaver() : weapon_(nullptr) {}
 
-  void set(const def::WeaponDef &def) { weapon_ = &def; }
+  void set(def::Ref<const def::WeaponDef> def) { weapon_ = &*def; }
   void save(json::saver::Context &ctx, Json::Value &value);
 
 private:
@@ -76,7 +76,7 @@ class UnitDefLoader {
 public:
   UnitDefLoader(AuxData &aux) : aux_(aux), unit_(nullptr) {}
 
-  void set(def::UnitDef &unit) { unit_ = &unit; }
+  void set(def::Ref<def::UnitDef> unit) { unit_ = &*unit; }
   void load(json::loader::Context &ctx, Json::Value &value);
 
 private:
@@ -88,7 +88,7 @@ class UnitDefSaver {
 public:
   UnitDefSaver(AuxData &aux) : aux_(aux), unit_(nullptr) {}
 
-  void set(const def::UnitDef &unit) { unit_ = &unit; }
+  void set(def::Ref<const def::UnitDef> unit) { unit_ = &*unit; }
   void save(json::saver::Context &ctx, Json::Value &value);
 
 private:

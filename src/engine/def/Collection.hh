@@ -15,7 +15,9 @@ namespace freeisle::def {
 template <typename T> using Collection = std::map<std::string, T>;
 
 /**
- * A reference to an object in a collection.
+ * A reference to an object in a collection. It can only be copied from
+ * non-const reference for const correctness. Use a Ref<const T> if you have
+ * a const Ref and need to make a copy.
  */
 template <typename T> class Ref {
 public:
@@ -83,6 +85,35 @@ public:
 
 private:
   typename Collection<T>::iterator iter;
+};
+
+/**
+ * Same as a Ref<T>, but only provides const access to the underlying
+ * object.
+ */
+template <typename T> class Ref<const T> {
+public:
+  Ref(typename Collection<T>::const_iterator iter) : iter(iter) {}
+
+  /**
+   * Return the object ID of the referred object.
+   */
+  const std::string &id() const { return iter->first; }
+
+  const T &operator*() const { return iter->second; }
+  const T *operator->() const { return &iter->second; }
+
+  /**
+   * Augment this reference to a non-const ref. This needs a non-const
+   * collection.
+   */
+  Ref<T> augment(Collection<T> &collection) {
+    assert(collection.find(iter->first) == iter);
+    return collection.find(iter->first);
+  }
+
+private:
+  typename Collection<T>::const_iterator iter;
 };
 
 /**

@@ -37,7 +37,7 @@ public:
   ShopDefLoader(const def::MapDef &map,
                 def::Collection<def::UnitDef> &unit_defs, AuxData &aux);
 
-  void set(def::ShopDef &shop);
+  void set(def::Ref<def::ShopDef> shop);
   void load(json::loader::Context &ctx, Json::Value &value);
 
 private:
@@ -51,7 +51,7 @@ class ShopDefSaver {
 public:
   ShopDefSaver(const def::Collection<def::UnitDef> &unit_defs, AuxData &aux);
 
-  void set(const def::ShopDef &shop);
+  void set(def::Ref<const def::ShopDef> shop);
   void save(json::saver::Context &ctx, Json::Value &value);
 
 private:
