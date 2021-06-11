@@ -30,9 +30,10 @@ TEST_F(TestShopDefHandlers, Load) {
       unit_defs.find("grunt");
   ASSERT_NE(grunt, unit_defs.end());
 
-  freeisle::def::ShopDef shop;
+  freeisle::def::Collection<freeisle::def::ShopDef> shops;
+  freeisle::def::ShopDef &shop = shops["shop001"];
   freeisle::def::serialize::ShopDefLoader loader(map, unit_defs, aux);
-  loader.set(shop);
+  loader.set(shops.find("shop001"));
 
   freeisle::json::loader::load_root_object("data/shop_fayetteville.json",
                                            loader);
@@ -63,9 +64,11 @@ TEST_F(TestShopDefHandlers, LoadInvalidLocation) {
       unit_defs.find("grunt");
   ASSERT_NE(grunt, unit_defs.end());
 
-  freeisle::def::ShopDef shop;
+  freeisle::def::Collection<freeisle::def::ShopDef> shops;
+  shops.try_emplace("shop001");
+
   freeisle::def::serialize::ShopDefLoader loader(map, unit_defs, aux);
-  loader.set(shop);
+  loader.set(shops.find("shop001"));
 
   ASSERT_THROW_KEEP_AS_E(freeisle::json::loader::load_root_object(
                              "data/shop_fayetteville.json", loader),
@@ -88,18 +91,22 @@ TEST_F(TestShopDefHandlers, Save) {
       unit_defs.find("grunt");
   ASSERT_NE(grunt, unit_defs.end());
 
-  const freeisle::def::ShopDef shop{
-      .name = "Fayetteville",
-      .type = freeisle::def::ShopDef::Type::Town,
-      .income = 350,
-      .container = {.max_units = 4,
-                    .max_weight = 4000,
-                    .supported_levels = freeisle::def::Level::Land},
-      .production_list = {grunt},
-      .location = {.x = 4, .y = 3}};
+  const freeisle::def::Collection<freeisle::def::ShopDef> shop_defs =
+      freeisle::def::make_collection<freeisle::def::ShopDef>(std::make_pair(
+          "shop001",
+          freeisle::def::ShopDef{
+              .name = "Fayetteville",
+              .type = freeisle::def::ShopDef::Type::Town,
+              .income = 350,
+              .container = {.max_units = 4,
+                            .max_weight = 4000,
+                            .supported_levels = freeisle::def::Level::Land},
+              .production_list =
+                  freeisle::def::make_ref_set<freeisle::def::UnitDef>(grunt),
+              .location = {.x = 4, .y = 3}}));
 
   freeisle::def::serialize::ShopDefSaver saver(unit_defs, aux);
-  saver.set(shop);
+  saver.set(shop_defs.find("shop001"));
 
   const std::vector<uint8_t> result =
       freeisle::json::saver::save_root_object(saver, nullptr);

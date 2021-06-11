@@ -19,9 +19,10 @@ public:
 };
 
 TEST_F(TestUnitDefHandlers, Load) {
-  freeisle::def::UnitDef unit;
+  freeisle::def::Collection<freeisle::def::UnitDef> units;
+  freeisle::def::UnitDef &unit = units["unit001"];
   freeisle::def::serialize::UnitDefLoader loader(aux);
-  loader.set(unit);
+  loader.set(units.find("unit001"));
   freeisle::json::loader::load_root_object("data/unit_grunt.json", loader);
 
   EXPECT_EQ(unit.name, "grunt");
@@ -111,7 +112,6 @@ TEST_F(TestUnitDefHandlers, Save) {
   unit.movement_cost[freeisle::def::BaseTerrainType::Mountain] = 300;
   unit.movement_cost[freeisle::def::OverlayTerrainType::Forest] = 150;
   unit.movement_cost[freeisle::def::OverlayTerrainType::Road] = 90;
-  ;
   unit.movement_cost[freeisle::def::OverlayTerrainType::Crevice] = 250;
   unit.movement_cost[freeisle::def::OverlayTerrainType::Fortification] = 100;
   unit.protection[freeisle::def::BaseTerrainType::Grass] = 100;
@@ -152,8 +152,11 @@ TEST_F(TestUnitDefHandlers, Save) {
   unit.view_range = 4;
   unit.jamming_range = 1;
 
+  const freeisle::def::Collection<freeisle::def::UnitDef> units = {
+      {"unit001", unit}};
+
   freeisle::def::serialize::UnitDefSaver saver(aux);
-  saver.set(unit);
+  saver.set(units.find("unit001"));
 
   const std::vector<uint8_t> result =
       freeisle::json::saver::save_root_object(saver, nullptr);

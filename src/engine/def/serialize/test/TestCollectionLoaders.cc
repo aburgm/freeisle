@@ -26,7 +26,7 @@ struct Objects {
 struct ObjectHandler {
   Object *obj;
 
-  void set(Object &o) { obj = &o; }
+  void set(freeisle::def::Ref<Object> o) { obj = &*o; }
 
   void load(freeisle::json::loader::Context &ctx, Json::Value &value) {
     obj->name = freeisle::json::loader::load<std::string>(ctx, value, "name");
@@ -58,12 +58,21 @@ struct ObjectsLoader {
                       object_number_loader);
 
     freeisle::json::loader::load_object(ctx, value, "objects", objects_loader);
-    objects.some_object = freeisle::def::serialize::load_ref(
-        ctx, value, "some_object", objects.objects);
+    freeisle::def::NullableRef<Object> some_object =
+        freeisle::def::serialize::load_ref(ctx, value, "some_object",
+                                           objects.objects);
     freeisle::json::loader::load_object(ctx, value, "object_numbers",
                                         refmap_loader);
     objects.subset = freeisle::def::serialize::load_ref_set(
         ctx, value, "subset", objects.objects);
+
+    // Some trickery for coverage:
+    if (some_object) {
+      freeisle::def::Ref<Object> ref = objects.objects.find(some_object.id());
+      freeisle::def::Ref<Object> ref2 = objects.objects.find(some_object.id());
+      ref2 = std::move(ref);
+      objects.some_object = std::move(ref2);
+    }
   }
 };
 

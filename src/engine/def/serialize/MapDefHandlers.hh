@@ -14,7 +14,7 @@ class DecorationDefLoader {
 public:
   DecorationDefLoader(std::map<uint32_t, const def::DecorationDef *> &indices);
 
-  void set(def::DecorationDef &def);
+  void set(def::Ref<def::DecorationDef> def);
   void load(json::loader::Context &ctx, Json::Value &value);
 
 private:
@@ -27,7 +27,7 @@ public:
   DecorationDefSaver(
       std::map<const def::DecorationDef *, uint32_t> &reverse_index_map);
 
-  void set(const def::DecorationDef &def);
+  void set(def::Ref<const def::DecorationDef> def);
   void save(json::saver::Context &ctx, Json::Value &value);
 
 private:

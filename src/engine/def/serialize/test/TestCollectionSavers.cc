@@ -26,7 +26,7 @@ struct Objects {
 struct ObjectHandler {
   const Object *obj;
 
-  void set(const Object &o) { obj = &o; }
+  void set(freeisle::def::Ref<const Object> o) { obj = &*o; }
 
   void save(freeisle::json::saver::Context &ctx, Json::Value &value) {
     freeisle::json::saver::save(ctx, value, "name", obj->name);

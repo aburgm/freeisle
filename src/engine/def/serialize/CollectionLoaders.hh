@@ -37,7 +37,7 @@ public:
           collection_->try_emplace(key);
       assert(result.second);
 
-      child_handler_.set(result.first->second);
+      child_handler_.set(result.first);
       json::loader::load_object(ctx, value, key.c_str(), child_handler_);
     }
   }
@@ -54,7 +54,7 @@ private:
  */
 template <typename T> class EmptyChildHandler {
 public:
-  void set(T &obj) {}
+  void set(def::Ref<T> obj) {}
   void load(json::loader::Context &ctx, Json::Value &value) {}
 };
 
@@ -81,7 +81,7 @@ public:
   void load(json::loader::Context &ctx, Json::Value &value) {
     for (typename def::Collection<T>::iterator iter = collection_->begin();
          iter != collection_->end(); ++iter) {
-      child_handler_.set(iter->second);
+      child_handler_.set(iter);
       json::loader::load_object(ctx, value, iter->first.c_str(),
                                 child_handler_);
     }
