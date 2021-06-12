@@ -93,6 +93,7 @@ private:
  */
 template <typename T> class Ref<const T> {
 public:
+  Ref(typename Collection<T>::iterator iter) : iter(iter) {}
   Ref(typename Collection<T>::const_iterator iter) : iter(iter) {}
 
   /**
@@ -126,6 +127,18 @@ public:
   NullableRef(typename Collection<T>::iterator iter) noexcept : ref_(iter) {}
   NullableRef(Ref<T> ref) noexcept : ref_(std::move(ref)) {}
 
+  NullableRef(NullableRef<T> &other) : ref_(std::move(other.ref_)) {}
+  NullableRef(NullableRef<T> &&other) : ref_(std::move(other.ref_)) {}
+
+  NullableRef &operator=(NullableRef &other) {
+    ref_ = std::move(other.ref_);
+    return *this;
+  }
+  NullableRef &operator=(NullableRef &&other) {
+    ref_ = std::move(other.ref_);
+    return *this;
+  }
+
   /**
    * Returns whether the NullableRef points to a valid object or not.
    */
@@ -144,21 +157,22 @@ public:
     return ref_->id();
   }
 
+  T &operator*() {
+    assert(ref_);
+    return **ref_;
+  }
   const T &operator*() const {
     assert(ref_);
     return **ref_;
+  }
+  T *operator->() {
+    assert(ref_);
+    return &**ref_;
   }
   const T *operator->() const {
     assert(ref_);
     return &**ref_;
   }
-
-  /**
-   * Return a non-const reference to the referenced object. This is only
-   * safe if the caller can provide a reference to the (non-const) collection
-   * containing the referenced object.
-   */
-  T &get(Collection<T> &collection) { return ref_->get(collection); }
 
 private:
   std::optional<Ref<T>> ref_;

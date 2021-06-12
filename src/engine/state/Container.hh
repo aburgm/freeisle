@@ -23,6 +23,8 @@ struct Container {
 
   /**
    * The units currently being contained.
+   *
+   * (no-save)
    */
   std::list<def::Ref<Unit>> units;
 };

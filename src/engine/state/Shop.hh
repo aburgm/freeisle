@@ -12,13 +12,15 @@ namespace freeisle::state {
  */
 struct Shop {
   /**
-   * Definition of this shop.
+   * Definition of this shop. This is only nullable so that it can be
+   * default-constructed, it is typically always expected to be set.
    */
-  const def::ShopDef *def;
+  def::NullableRef<def::ShopDef> def;
 
   /**
    * Player who owns the shop. The shop is generating income for this player,
-   * and this player can produce units in the shop.
+   * and this player can produce units in the shop. Can be null if nobody
+   * owns the shop.
    */
   def::NullableRef<Player> owner;
 

@@ -211,7 +211,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainUnowned) {
               .c_str(),
           loader),
       freeisle::json::loader::Error) {
-    EXPECT_EQ(e.message(), "Unit declared has captain has different owner");
+    EXPECT_EQ(e.message(), "Unit declared as captain has different owner");
     EXPECT_EQ(e.line(), 11);
     EXPECT_EQ(e.col(), 14);
     EXPECT_EQ(freeisle::fs::path::basename(e.path()), "player_rose.json");
@@ -249,7 +249,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainOtherPlayer) {
               .c_str(),
           loader),
       freeisle::json::loader::Error) {
-    EXPECT_EQ(e.message(), "Unit declared has captain has different owner");
+    EXPECT_EQ(e.message(), "Unit declared as captain has different owner");
     EXPECT_EQ(e.line(), 11);
     EXPECT_EQ(e.col(), 14);
     EXPECT_EQ(freeisle::fs::path::basename(e.path()), "player_rose.json");

@@ -97,12 +97,9 @@ private:
  * value with the given key is expected to be a string denoting the object ID.
  */
 template <typename T>
-def::NullableRef<T> load_ref(json::loader::Context &ctx, Json::Value &value,
-                             const char *key, def::Collection<T> &collection) {
-  if (!value.isMember(key)) {
-    return def::NullableRef<T>{};
-  }
-
+def::Ref<T> load_mandatory_ref(json::loader::Context &ctx, Json::Value &value,
+                               const char *key,
+                               def::Collection<T> &collection) {
   const std::string str = json::loader::load<std::string>(ctx, value, key);
   const typename def::Collection<T>::iterator iter = collection.find(str);
   if (iter == collection.end()) {
@@ -112,6 +109,22 @@ def::NullableRef<T> load_ref(json::loader::Context &ctx, Json::Value &value,
   }
 
   return iter;
+}
+
+/**
+ * Loads an object reference from a JSON object. In the JSON document, the
+ * value with the given key is expected to be a string denoting the object ID.
+ * If there is no key with the given ID in the object, a null Ref is returned.
+ */
+template <typename T>
+def::NullableRef<T> load_nullable_ref(json::loader::Context &ctx,
+                                      Json::Value &value, const char *key,
+                                      def::Collection<T> &collection) {
+  if (!value.isMember(key)) {
+    return def::NullableRef<T>{};
+  }
+
+  return load_mandatory_ref(ctx, value, key, collection);
 }
 
 /**
