@@ -79,7 +79,7 @@ public:
           map_->find(iter);
       assert(map_iter != map_->end());
 
-      child_handler_.set(map_iter->second);
+      child_handler_.set(iter, map_iter->second);
       json::saver::save_object(ctx, value, map_iter->first.id().c_str(),
                                child_handler_);
     }

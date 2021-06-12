@@ -36,7 +36,7 @@ struct ObjectHandler {
 struct ObjectNumberHandler {
   uint32_t n;
 
-  void set(uint32_t o) { n = o; }
+  void set(freeisle::def::Ref<const Object>, uint32_t o) { n = o; }
 
   void save(freeisle::json::saver::Context &ctx, Json::Value &value) {
     freeisle::json::saver::save(ctx, value, "number", n);
