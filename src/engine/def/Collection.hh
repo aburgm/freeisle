@@ -50,6 +50,9 @@ public:
   T *operator->() { return &iter->second; }
   const T *operator->() const { return &iter->second; }
 
+  bool operator==(const Ref &other) const { return iter == other.iter; }
+  bool operator!=(const Ref &other) const { return iter != other.iter; }
+
   /**
    * Compare to other references. A reference compares less than another
    * reference if its object ID compares less than the other reference's
@@ -130,6 +133,13 @@ public:
   NullableRef(NullableRef<T> &other) : ref_(std::move(other.ref_)) {}
   NullableRef(NullableRef<T> &&other) : ref_(std::move(other.ref_)) {}
 
+  bool operator==(const NullableRef &other) const { return ref_ == other.ref_; }
+  bool operator!=(const NullableRef &other) const { return ref_ != other.ref_; }
+  bool operator==(const Ref<T> &other) const { return ref_ && *ref_ == other; }
+  bool operator==(const typename Collection<T>::iterator iter) const {
+    return *this == NullableRef<T>(iter);
+  }
+
   NullableRef &operator=(NullableRef &other) {
     ref_ = std::move(other.ref_);
     return *this;
@@ -174,6 +184,11 @@ public:
     return &**ref_;
   }
 
+  operator Ref<T>() {
+    assert(ref_);
+    return *ref_;
+  }
+
 private:
   std::optional<Ref<T>> ref_;
 };
@@ -204,6 +219,18 @@ Collection<T> make_collection(Args &&... args) {
   Collection<T> collection;
   (collection.insert(std::forward<Args>(args)), ...);
   return collection;
+}
+
+/**
+ * Create a RefMap from a fixed number of pairs. This can be used instead
+ * of construction with an initializer list if the type C or type T is not
+ * copy-constructible.
+ */
+template <typename C, typename T, typename... Args>
+RefMap<C, T> make_ref_map(Args &&... args) {
+  RefMap<C, T> refmap;
+  (refmap.insert(std::forward<Args>(args)), ...);
+  return refmap;
 }
 
 /**

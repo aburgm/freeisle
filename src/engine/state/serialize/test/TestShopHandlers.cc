@@ -2,16 +2,13 @@
 
 #include "state/Shop.hh"
 
-#include "fs/Path.hh"
-
 #include "core/test/util/Util.hh"
-#include "fs/test/util/TempDirFixture.hh"
 #include "log/test/util/System.hh"
 #include "json/test/Util.hh"
 
 #include <gtest/gtest.h>
 
-class TestShopHandlers : public ::freeisle::fs::test::TempDirFixture {
+class TestShopHandlers : public ::testing::Test {
 public:
   TestShopHandlers()
       : aux{system.logger},
@@ -20,7 +17,6 @@ public:
             .def = &map_def,
             .grid = freeisle::core::Grid<freeisle::state::Map::Hex>(5, 5),
         } {
-
     shop_defs.try_emplace("shop001",
                           freeisle::def::ShopDef{.location = {.x = 3, .y = 1}});
     shop_defs.try_emplace("shop002",
@@ -57,8 +53,8 @@ TEST_F(TestShopHandlers, LoadShop) {
 
   ASSERT_TRUE(shop.owner);
   ASSERT_TRUE(shop.def);
-  EXPECT_EQ(&*shop.def, &shop_defs.find("shop001")->second);
-  EXPECT_EQ(&*shop.owner, &players.find("player001")->second);
+  EXPECT_EQ(shop.def, shop_defs.find("shop001"));
+  EXPECT_EQ(shop.owner, players.find("player001"));
 
   // Container gets populated by unit loading
   EXPECT_EQ(shop.container.def, &shop_defs.find("shop001")->second.container);
@@ -81,7 +77,7 @@ TEST_F(TestShopHandlers, LoadShopUnowned) {
 
   ASSERT_FALSE(shop.owner);
   ASSERT_TRUE(shop.def);
-  EXPECT_EQ(&*shop.def, &shop_defs.find("shop001")->second);
+  EXPECT_EQ(shop.def, shop_defs.find("shop001"));
 
   // Container gets populated by unit loading
   EXPECT_EQ(shop.container.def, &shop_defs.find("shop001")->second.container);
@@ -167,10 +163,8 @@ TEST_F(TestShopHandlers, Save) {
   freeisle::state::serialize::ShopSaver saver(shop_defs, players);
   saver.set(shops.find("shop001"));
 
-  freeisle::json::saver::save_root_object("result.json", saver, nullptr);
-
   const std::vector<uint8_t> result =
-      freeisle::fs::read_file("result.json", nullptr);
+      freeisle::json::saver::save_root_object(saver, nullptr);
   const std::string expected = "{\n"
                                "  \"def\": \"shop001\",\n"
                                "  \"owner\": \"player001\"\n"

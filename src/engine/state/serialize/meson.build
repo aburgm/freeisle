@@ -2,8 +2,9 @@ state_serialize_lib = static_library(
   'state_serialize', [
     'PlayerHandlers.cc',
     'ShopHandlers.cc',
+    'UnitHandlers.cc',
   ],
-  dependencies : [json_dep],
+  dependencies : [json_dep, def_serialize_dep],
   link_with : [png_lib, log_lib],
   include_directories : engine)
 

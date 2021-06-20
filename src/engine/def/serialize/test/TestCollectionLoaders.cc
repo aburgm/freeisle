@@ -36,7 +36,7 @@ struct ObjectHandler {
 struct ObjectNumberHandler {
   uint32_t *n;
 
-  void set(uint32_t &o) { n = &o; }
+  void set(freeisle::def::Ref<const Object>, uint32_t &o) { n = &o; }
 
   void load(freeisle::json::loader::Context &ctx, Json::Value &value) {
     *n = freeisle::json::loader::load<uint32_t>(ctx, value, "number");
@@ -60,7 +60,7 @@ struct ObjectsLoader {
     freeisle::json::loader::load_object(ctx, value, "objects", objects_loader);
     freeisle::def::NullableRef<Object> some_object =
         freeisle::def::serialize::load_nullable_ref(ctx, value, "some_object",
-                                           objects.objects);
+                                                    objects.objects);
     freeisle::json::loader::load_object(ctx, value, "object_numbers",
                                         refmap_loader);
     objects.subset = freeisle::def::serialize::load_ref_set(

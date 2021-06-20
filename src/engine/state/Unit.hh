@@ -18,11 +18,11 @@ struct Unit {
    * the game, but might be interesting to look at.
    */
   struct Stats {
-    uint32_t hits_delivered;
+    uint32_t hits_dealt;
     uint32_t hits_taken;
 
+    uint32_t damage_dealt;
     uint32_t damage_taken;
-    uint32_t damage_caused;
 
     uint32_t hexes_moved;
   };
@@ -30,7 +30,7 @@ struct Unit {
   /**
    * Unit definition with all static unit information.
    */
-  const def::UnitDef *def;
+  def::NullableRef<def::UnitDef> def;
 
   /**
    * Player who controls this unit. If not set, the unit is not actively
@@ -72,11 +72,6 @@ struct Unit {
   uint32_t experience;
 
   /**
-   * General statistics for this unit.
-   */
-  Stats stats;
-
-  /**
    * Whether the unit has performed an action (attack or supply) during
    * this turn.
    */
@@ -112,6 +107,11 @@ struct Unit {
    * Pointer to the shop that this unit is inside, if any.
    */
   def::NullableRef<Shop> contained_in_shop;
+
+  /**
+   * General statistics for this unit.
+   */
+  Stats stats;
 };
 
 } // namespace freeisle::state

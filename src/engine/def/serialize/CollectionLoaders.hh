@@ -147,7 +147,7 @@ public:
           map_->try_emplace(iter);
       assert(result.second);
 
-      child_handler_.set(result.first->second);
+      child_handler_.set(iter, result.first->second);
       json::loader::load_object(ctx, value, iter->first.c_str(),
                                 child_handler_);
     }
