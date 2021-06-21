@@ -22,9 +22,11 @@ public:
 };
 
 TEST_F(TestPlayerHandlers, LoadTeam) {
-  freeisle::state::Team team;
+  freeisle::def::Collection<freeisle::state::Team> teams;
+  freeisle::state::Team &team = teams["team001"];
+
   freeisle::state::serialize::TeamLoader loader;
-  loader.set(team);
+  loader.set(teams.find("team001"));
 
   freeisle::json::loader::load_root_object(
       freeisle::fs::path::join(orig_directory, "data", "team_north.json")
@@ -35,9 +37,11 @@ TEST_F(TestPlayerHandlers, LoadTeam) {
 }
 
 TEST_F(TestPlayerHandlers, SaveTeam) {
-  const freeisle::state::Team team = {.name = "North"};
+  freeisle::def::Collection<freeisle::state::Team> teams;
+  teams.try_emplace("team001", freeisle::state::Team{.name = "North"});
+
   freeisle::state::serialize::TeamSaver saver;
-  saver.set(team);
+  saver.set(teams.find("team001"));
 
   freeisle::json::saver::save_root_object("result.json", saver, nullptr);
 
@@ -72,7 +76,7 @@ TEST_F(TestPlayerHandlers, LoadPlayer) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(*player);
+  loader.set(player);
 
   freeisle::json::loader::load_root_object(
       freeisle::fs::path::join(orig_directory, "data", "player_rose.json")
@@ -129,7 +133,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerTooLargeGridSize) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(*player);
+  loader.set(player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -166,7 +170,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerTooSmallGridSize) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(*player);
+  loader.set(player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -203,7 +207,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainUnowned) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(*player);
+  loader.set(player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -241,7 +245,7 @@ TEST_F(TestPlayerHandlers, LoadPlayerCaptainOtherPlayer) {
   };
 
   freeisle::state::serialize::PlayerLoader loader(map, teams, units, aux);
-  loader.set(*player);
+  loader.set(player);
 
   ASSERT_THROW_KEEP_AS_E(
       freeisle::json::loader::load_root_object(
@@ -299,7 +303,7 @@ TEST_F(TestPlayerHandlers, SavePlayer) {
   };
 
   freeisle::state::serialize::PlayerSaver saver(map, teams, units, aux);
-  saver.set(*player);
+  saver.set(players.begin());
 
   freeisle::json::saver::save_root_object("result.json", saver, nullptr);
 
