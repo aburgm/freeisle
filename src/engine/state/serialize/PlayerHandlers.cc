@@ -24,7 +24,7 @@ void ColorSaver::save(json::saver::Context &ctx, Json::Value &value) {
 
 TeamLoader::TeamLoader() : team_(nullptr) {}
 
-void TeamLoader::set(state::Team &team) { team_ = &team; }
+void TeamLoader::set(def::Ref<state::Team> team) { team_ = &*team; }
 
 void TeamLoader::load(json::loader::Context &ctx, Json::Value &value) {
   assert(team_ != nullptr);
@@ -34,7 +34,7 @@ void TeamLoader::load(json::loader::Context &ctx, Json::Value &value) {
 
 TeamSaver::TeamSaver() : team_(nullptr) {}
 
-void TeamSaver::set(const state::Team &team) { team_ = &team; }
+void TeamSaver::set(def::Ref<const state::Team> team) { team_ = &*team; }
 
 void TeamSaver::save(json::saver::Context &ctx, Json::Value &value) {
   assert(team_ != nullptr);
@@ -47,7 +47,7 @@ PlayerLoader::PlayerLoader(const def::MapDef &map, def::Collection<Team> &teams,
                            def::serialize::AuxData &aux)
     : player_(nullptr), aux_(aux), map_(map), teams_(teams), units_(units) {}
 
-void PlayerLoader::set(state::Player &player) { player_ = &player; }
+void PlayerLoader::set(def::Ref<state::Player> player) { player_ = &*player; }
 
 void PlayerLoader::load(json::loader::Context &ctx, Json::Value &value) {
   assert(player_ != nullptr);
@@ -75,7 +75,7 @@ void PlayerLoader::load(json::loader::Context &ctx, Json::Value &value) {
       assert(index / 8 < fow.size());
 
       player_->fow(x, y).discovered = fow[index / 8] & (1 << (index % 8));
-      player_->fow(x, y).view = 0; // updated in post-load
+      player_->fow(x, y).view = 0;
     }
   }
 
@@ -100,6 +100,8 @@ void PlayerLoader::load(json::loader::Context &ctx, Json::Value &value) {
     if (iter->second.owner && &*iter->second.owner == player_) {
       player_->units.insert(iter);
     }
+
+    // TODO(armin): update FoW view
   }
 }
 
@@ -110,8 +112,8 @@ PlayerSaver::PlayerSaver(const def::MapDef &map,
     : player_(nullptr), aux_(aux), map_(map), teams_(teams), units_(units),
       player_index_(0) {}
 
-void PlayerSaver::set(const state::Player &player) {
-  player_ = &player;
+void PlayerSaver::set(def::Ref<const state::Player> player) {
+  player_ = &*player;
   ++player_index_;
 }
 

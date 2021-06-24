@@ -39,7 +39,7 @@ class TeamLoader {
 public:
   TeamLoader();
 
-  void set(state::Team &team);
+  void set(def::Ref<state::Team> team);
   void load(json::loader::Context &ctx, Json::Value &value);
 
 private:
@@ -50,7 +50,7 @@ class TeamSaver {
 public:
   TeamSaver();
 
-  void set(const state::Team &team);
+  void set(def::Ref<const state::Team> team);
   void save(json::saver::Context &ctx, Json::Value &value);
 
 private:
@@ -66,7 +66,7 @@ public:
   PlayerLoader(const def::MapDef &map, def::Collection<Team> &teams,
                def::Collection<Unit> &units, def::serialize::AuxData &aux);
 
-  void set(state::Player &player);
+  void set(def::Ref<state::Player> player);
   void load(json::loader::Context &ctx, Json::Value &value);
 
 private:
@@ -82,7 +82,7 @@ public:
   PlayerSaver(const def::MapDef &map, const def::Collection<Team> &teams,
               const def::Collection<Unit> &units, def::serialize::AuxData &aux);
 
-  void set(const state::Player &player);
+  void set(def::Ref<const state::Player> player);
   void save(json::saver::Context &ctx, Json::Value &value);
 
 private:

@@ -1,11 +1,13 @@
 #pragma once
 
+#include "state/Map.hh"
 #include "state/Player.hh"
 #include "state/Shop.hh"
 #include "state/Team.hh"
 #include "state/Unit.hh"
 
 #include "def/Collection.hh"
+#include "def/Scenario.hh"
 
 namespace freeisle::state {
 
@@ -29,6 +31,11 @@ struct State {
   def::Collection<Player> players;
 
   /**
+   * Map.
+   */
+  Map map;
+
+  /**
    * State of all shops in the game.
    */
   def::Collection<Shop> shops;
@@ -46,7 +53,7 @@ struct State {
   /**
    * Player whose turn it currently is.
    */
-  def::Ref<Player> player_at_turn;
+  def::NullableRef<Player> player_at_turn;
 };
 
 } // namespace freeisle::state

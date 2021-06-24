@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Enum.hh"
+
 namespace freeisle::def {
 
 /**
