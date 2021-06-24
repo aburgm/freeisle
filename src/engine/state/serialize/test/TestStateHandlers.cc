@@ -186,7 +186,7 @@ TEST_F(TestStateHandlers, LoadState) {
 }
 
 TEST_F(TestStateHandlers, Save) {
-  freeisle::state::State state;
+  freeisle::state::State state{.scenario = &scenario};
   state.teams.try_emplace("north", freeisle::state::Team{.name = "North"});
   state.teams.try_emplace("south", freeisle::state::Team{.name = "South"});
   state.players.try_emplace(
