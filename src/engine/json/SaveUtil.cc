@@ -12,9 +12,9 @@ void save_binary(Context &ctx, Json::Value &value, const char *key,
     const std::string path =
         fs::path::join(fs::path::dirname(ctx.path), filename);
     fs::write_file(filename, data, len, nullptr);
-    json::saver::save(
-        ctx, value, key,
-        "file:" + fs::path::make_relative(path, fs::path::dirname(ctx.path)));
+    json::saver::save(ctx, value, key,
+                      "file:" + std::string(fs::path::make_relative(
+                                    path, fs::path::dirname(ctx.path))));
   } else {
     std::string base64_encoded;
     base64_encoded.resize(7 +

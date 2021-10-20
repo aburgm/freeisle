@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 /**
@@ -20,7 +21,7 @@ bool is_absolute(const std::string_view &path);
  * components except for the last component in the path. If the
  * path consists of only a single component, returns ".".
  */
-std::string dirname(const std::string &path);
+std::string_view dirname(const std::string_view &path);
 
 /**
  * Return the basename of the given path, i.e. the last component
@@ -29,7 +30,7 @@ std::string dirname(const std::string &path);
  * a non-empty path. The result is guaranteed to never contain
  * the a '/' character.
  */
-std::string basename(const std::string &path);
+std::string_view basename(const std::string_view &path);
 
 /**
  * Return the extension of the filename with the given path. The
@@ -37,12 +38,13 @@ std::string basename(const std::string &path);
  * last component of the filename, or the full filename if there
  * is no ".".
  */
-const std::string extension(const std::string &path);
+std::string_view extension(const std::string_view &path);
 
 /**
  * Returns a pair of the directory name and the filename.
  */
-std::pair<std::string, std::string> split(const std::string &path);
+std::pair<std::string_view, std::string_view>
+split(const std::string_view &path);
 
 /**
  * Resolves directory traversals such as "." and ".." in the given path.
@@ -58,27 +60,28 @@ std::string resolve(const std::string_view &path);
  * Join two path components with the directory separator. If the second
  * argument is absolute, then the first argument is ignored.
  */
-std::string join(const std::string &front, const std::string &back);
+std::string join(const std::string_view &front, const std::string_view &back);
 
 /**
  * Tests whether the given path is a path relative to the given root, or not.
  * The paths are not resolved of directory traversals before checking, use
  * the resolve() function if that is necessary.
  */
-bool is_relative_to(const std::string &path, const std::string &root);
+bool is_relative_to(const std::string_view &path, const std::string_view &root);
 
 /**
  * Make the given path relative to the given root path. If path is not
  * a path relative to root, throw std::invalid_argument.
  */
-std::string make_relative(const std::string &path, const std::string &root);
+std::string_view make_relative(const std::string_view &path,
+                               const std::string_view &root);
 
 /**
  * Joins more than two path components.
  */
 template <typename... Tail>
-inline std::string join(const std::string &first, const std::string &second,
-                        Tail &&... tail) {
+inline std::string join(const std::string_view &first,
+                        const std::string_view &second, Tail &&... tail) {
   return join(join(first, second), std::forward<Tail>(tail)...);
 }
 

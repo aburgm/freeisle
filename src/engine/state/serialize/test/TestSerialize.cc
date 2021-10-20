@@ -19,7 +19,7 @@ public:
 };
 
 TEST_F(TestSerialize, CreateScenarioWithoutPlayers) {
-  const std::string base_dir = freeisle::fs::path::dirname(
+  const std::string_view base_dir = freeisle::fs::path::dirname(
       freeisle::fs::path::dirname(freeisle::fs::path::dirname(orig_directory)));
 
   const freeisle::state::serialize::CreateOptions options = {
@@ -28,7 +28,7 @@ TEST_F(TestSerialize, CreateScenarioWithoutPlayers) {
       .width = 10,
       .height = 10,
       .players = {},
-      .base_dir = base_dir,
+      .base_dir = std::string(base_dir),
       .unit_defs = {"def/serialize/test/data/unit_grunt.json"},
       .decoration_defs = {"state/serialize/test/data/deco_flowers.json"}};
 
@@ -38,7 +38,7 @@ TEST_F(TestSerialize, CreateScenarioWithoutPlayers) {
 }
 
 TEST_F(TestSerialize, CreateAndSaveScenario) {
-  const std::string base_dir = freeisle::fs::path::dirname(
+  const std::string_view base_dir = freeisle::fs::path::dirname(
       freeisle::fs::path::dirname(freeisle::fs::path::dirname(orig_directory)));
 
   const freeisle::state::serialize::CreateOptions options = {
@@ -47,7 +47,7 @@ TEST_F(TestSerialize, CreateAndSaveScenario) {
       .width = 10,
       .height = 10,
       .players = {{"my_player", {255, 0, 0}}},
-      .base_dir = base_dir,
+      .base_dir = std::string(base_dir),
       .unit_defs = {"def/serialize/test/data/unit_grunt.json"},
       .decoration_defs = {"state/serialize/test/data/deco_flowers.json"}};
 

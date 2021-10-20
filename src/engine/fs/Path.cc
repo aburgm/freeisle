@@ -20,28 +20,29 @@ bool is_absolute(const std::string_view &path) {
   return !path.empty() && path[0] == '/';
 }
 
-std::string dirname(const std::string &path) {
-  const std::pair<std::string, std::string> pair = split(path);
+std::string_view dirname(const std::string_view &path) {
+  const std::pair<std::string_view, std::string_view> pair = split(path);
   return pair.first;
 }
 
-std::string basename(const std::string &path) {
-  const std::pair<std::string, std::string> pair = split(path);
+std::string_view basename(const std::string_view &path) {
+  const std::pair<std::string_view, std::string_view> pair = split(path);
   return pair.second;
 }
 
-const std::string extension(const std::string &path) {
-  const std::string bn = basename(path);
+std::string_view extension(const std::string_view &path) {
+  const std::string_view bn = basename(path);
   const std::string::size_type pos = bn.rfind('.');
 
   if (pos == std::string::npos) {
-    return std::string{};
+    return std::string_view{};
   } else {
     return bn.substr(pos);
   }
 }
 
-std::pair<std::string, std::string> split(const std::string &path) {
+std::pair<std::string_view, std::string_view>
+split(const std::string_view &path) {
   if (path.empty()) {
     return {".", ""};
   }
@@ -99,33 +100,34 @@ std::string resolve(const std::string_view &path) {
   return result;
 }
 
-std::string join(const std::string &front, const std::string &back) {
+std::string join(const std::string_view &front, const std::string_view &back) {
   if (is_absolute(back)) {
     const std::string::size_type pos = back.find_first_not_of("/");
     if (pos == std::string::npos) {
       return "/";
     } else {
-      return back.substr(pos - 1);
+      return std::string(back.substr(pos - 1));
     }
   } else {
     const std::string::size_type pos = front.find_last_not_of("/");
     if (pos == std::string::npos) {
       if (front.empty()) {
-        return back;
+        return std::string(back);
       } else {
-        return "/" + back;
+        return "/" + std::string(back);
       }
     } else {
       if (back.empty()) {
-        return front.substr(0, pos + 1);
+        return std::string(front.substr(0, pos + 1));
       } else {
-        return front.substr(0, pos + 1) + "/" + back;
+        return std::string(front.substr(0, pos + 1)) + "/" + std::string(back);
       }
     }
   }
 }
 
-bool is_relative_to(const std::string &path, const std::string &root) {
+bool is_relative_to(const std::string_view &path,
+                    const std::string_view &root) {
   assert(!root.empty());
 
   std::string::size_type n = root.find_last_not_of("/");
@@ -140,7 +142,8 @@ bool is_relative_to(const std::string &path, const std::string &root) {
           (path.length() > n && path[n] == '/'));
 }
 
-std::string make_relative(const std::string &path, const std::string &root) {
+std::string_view make_relative(const std::string_view &path,
+                               const std::string_view &root) {
   assert(!root.empty());
 
   // TODO(armin): share code to find n with is_relative

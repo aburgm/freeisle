@@ -4,21 +4,22 @@
 
 namespace freeisle::core::string {
 
-bool has_prefix(const std::string &str, const std::string &prefix) {
+bool has_prefix(const std::string_view &str, const std::string_view &prefix) {
   return str.length() >= prefix.length() &&
          str.compare(0, prefix.length(), prefix) == 0;
 }
 
-bool has_suffix(const std::string &str, const std::string &suffix) {
+bool has_suffix(const std::string_view &str, const std::string_view &suffix) {
   return str.length() >= suffix.length() &&
          str.compare(str.length() - suffix.length(), suffix.length(), suffix) ==
              0;
 }
 
-std::vector<std::string> split(const std::string &str, const std::string &sep) {
+std::vector<std::string_view> split(const std::string_view &str,
+                                    const std::string_view &sep) {
   assert(!sep.empty());
 
-  std::vector<std::string> result;
+  std::vector<std::string_view> result;
 
   std::string::size_type prev = 0;
   std::string::size_type pos;
