@@ -6,7 +6,7 @@
     "blue": 10
   },
   "team": "south",
-  "fow": "fow.1.bin",
+  "fow": "file:fow.1.bin",
   "wealth": 1000,
   "captain": "unit003",
   "lose_conditions": ["conquer_hq", "eliminate_captain"],

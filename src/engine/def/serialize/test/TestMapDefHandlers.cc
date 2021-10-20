@@ -27,7 +27,8 @@ TEST_F(TestMapDefHandlers, LoadEmpty5x5) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
       "\"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
       "GmLdqcAAAAAElFTkSuQmCC\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
@@ -55,7 +56,7 @@ TEST_F(TestMapDefHandlers, LoadEmpty5x5) {
 TEST_F(TestMapDefHandlers, LoadEmpty5x5FromFile) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
-      "\"grid\": \"data/empty_5x5.png\"}";
+      "\"grid\": \"file:data/empty_5x5.png\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
@@ -87,7 +88,8 @@ TEST_F(TestMapDefHandlers, LoadVarying4x4) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}, "
       "\"obj002\": {\"name\": \"pebbles\", \"index\": 2}}, \"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAJUlEQVQImS3GsQ0AIAwDMC"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAJUlEQVQImS3GsQ0AIAwDMC"
       "cD//+LRBnAk7MYsKt/igg0ctTkLVzAPAcL8VlLnAAAAABJRU5ErkJggg==\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
@@ -149,7 +151,8 @@ TEST_F(TestMapDefHandlers, LoadCorruptPNG) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
       "\"grid\": "
-      "\"TAO2Rw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
+      "\"base64:"
+      "TAO2Rw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
       "GmLdqcAAAAAElFTkSuQmCC\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
@@ -168,7 +171,8 @@ TEST_F(TestMapDefHandlers, LoadUndefinedIndex) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}, "
       "\"obj002\": {\"name\": \"pebbles\", \"index\": 3}}, \"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAJUlEQVQImS3GsQ0AIAwDMC"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAJUlEQVQImS3GsQ0AIAwDMC"
       "cD//+LRBnAk7MYsKt/igg0ctTkLVzAPAcL8VlLnAAAAABJRU5ErkJggg==\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
@@ -188,7 +192,8 @@ TEST_F(TestMapDefHandlers, LoadDuplicateIndex) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}, "
       "\"obj002\": {\"name\": \"pebbles\", \"index\": 1}}, \"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
       "GmLdqcAAAAAElFTkSuQmCC\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
@@ -208,7 +213,8 @@ TEST_F(TestMapDefHandlers, LoadIndex0) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}, "
       "\"obj002\": {\"name\": \"pebbles\", \"index\": 0}}, \"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
       "GmLdqcAAAAAElFTkSuQmCC\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
@@ -228,7 +234,8 @@ TEST_F(TestMapDefHandlers, LoadTooHighIndex) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 257}, "
       "\"obj002\": {\"name\": \"pebbles\", \"index\": 1}}, \"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
       "GmLdqcAAAAAElFTkSuQmCC\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
@@ -246,7 +253,7 @@ TEST_F(TestMapDefHandlers, LoadTooHighIndex) {
 TEST_F(TestMapDefHandlers, LoadAbsolutePath) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
-      "\"grid\": \"/data/empty_5x5.png\"}";
+      "\"grid\": \"file:/data/empty_5x5.png\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
@@ -267,7 +274,7 @@ TEST_F(TestMapDefHandlers, LoadAbsolutePath) {
 TEST_F(TestMapDefHandlers, LoadInvalidBaseTerrain) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
-      "\"grid\": \"data/invalid_base_terrain_5x5.png\"}";
+      "\"grid\": \"file:data/invalid_base_terrain_5x5.png\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
@@ -289,7 +296,7 @@ TEST_F(TestMapDefHandlers, LoadInvalidBaseTerrain) {
 TEST_F(TestMapDefHandlers, LoadInvalidOverlayTerrain) {
   const std::string to_be_loaded =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
-      "\"grid\": \"data/invalid_overlay_terrain_5x5.png\"}";
+      "\"grid\": \"file:data/invalid_overlay_terrain_5x5.png\"}";
   const std::vector<uint8_t> data(to_be_loaded.begin(), to_be_loaded.end());
 
   freeisle::def::MapDef map;
@@ -324,7 +331,8 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5) {
   const std::string expected_value =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
       "\"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAADElEQVQImWNgoC4AAABQAA"
       "GmLdqcAAAAAElFTkSuQmCC\"}";
   freeisle::json::test::check(value, expected_value);
 
@@ -340,7 +348,7 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5ToFile) {
       .grid = freeisle::core::Grid<freeisle::def::MapDef::Hex>(5, 5),
   };
 
-  freeisle::def::serialize::MapDefSaver saver(map, aux, "");
+  freeisle::def::serialize::MapDefSaver saver(map, aux, "map.png");
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map;
   freeisle::json::saver::Context ctx{.path = "save.json",
@@ -350,7 +358,7 @@ TEST_F(TestMapDefHandlers, SaveEmpty5x5ToFile) {
 
   const std::string expected_value =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}}, "
-      "\"grid\": \"map.png\"}";
+      "\"grid\": \"file:map.png\"}";
   freeisle::json::test::check(value, expected_value);
 
   const std::vector<uint8_t> file_content =
@@ -413,7 +421,8 @@ TEST_F(TestMapDefHandlers, SaveVarying4x4) {
   const std::string expected_value =
       "{\"decorations\": {\"obj001\": {\"name\": \"flowers\", \"index\": 1}, "
       "\"obj002\": {\"name\": \"pebbles\", \"index\": 2}}, \"grid\": "
-      "\"iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAJUlEQVQImS3GsQ0AIAwDMC"
+      "\"base64:"
+      "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAJUlEQVQImS3GsQ0AIAwDMC"
       "cD//+LRBnAk7MYsKt/igg0ctTkLVzAPAcL8VlLnAAAAABJRU5ErkJggg==\"}";
   freeisle::json::test::check(value, expected_value);
 }

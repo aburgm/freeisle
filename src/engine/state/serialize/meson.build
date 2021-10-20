@@ -1,6 +1,7 @@
 state_serialize_lib = static_library(
   'state_serialize', [
     'PlayerHandlers.cc',
+    'Serialize.cc',
     'ShopHandlers.cc',
     'StateHandlers.cc',
     'UnitHandlers.cc',

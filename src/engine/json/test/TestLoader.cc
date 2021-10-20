@@ -747,7 +747,7 @@ TEST(Loader, CustomErrorInheritedFromSublevelInclude) {
 TEST(Loader, BinaryInline) {
   BinaryHandler handler;
 
-  const std::string text = "{\"data\": \"8HoBMQ==\"}";
+  const std::string text = "{\"data\": \"base64:8HoBMQ==\"}";
   std::vector<uint8_t> data(text.begin(), text.end());
 
   const std::map<std::string, freeisle::json::IncludeInfo> include_map =
@@ -760,6 +760,39 @@ TEST(Loader, BinaryInline) {
   EXPECT_EQ(handler.data[3], 49);
 
   EXPECT_TRUE(include_map.empty());
+}
+
+TEST(Loader, BinaryInlineInvalid) {
+  BinaryHandler handler;
+
+  const std::string text = "{\"data\": \"base64:8HoBM?==\"}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  ASSERT_THROW_KEEP_AS_E(
+      freeisle::json::loader::load_root_object(data, handler),
+      freeisle::json::loader::Error) {
+    EXPECT_EQ(e.path(), "");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 10);
+    EXPECT_EQ(e.message(), "Illegal character: ?");
+  }
+}
+
+TEST(Loader, BinaryInvalidSchema) {
+  BinaryHandler handler;
+
+  const std::string text = "{\"data\": \"something:nothing\"}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  ASSERT_THROW_KEEP_AS_E(
+      freeisle::json::loader::load_root_object(data, handler),
+      freeisle::json::loader::Error) {
+    EXPECT_EQ(e.path(), "");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 10);
+    EXPECT_EQ(e.message(),
+              "Unexpected binary schema for \"something:nothing\"");
+  }
 }
 
 TEST(Loader, BinaryExternal) {
@@ -775,6 +808,22 @@ TEST(Loader, BinaryExternal) {
   EXPECT_EQ(handler.data[3], 49);
 
   EXPECT_TRUE(include_map.empty());
+}
+
+TEST(Loader, BinaryExternalWithoutContext) {
+  BinaryHandler handler;
+
+  const std::string text = "{\"data\": \"file:data.dat\"}";
+  std::vector<uint8_t> data(text.begin(), text.end());
+
+  ASSERT_THROW_KEEP_AS_E(
+      freeisle::json::loader::load_root_object(data, handler),
+      freeisle::json::loader::Error) {
+    EXPECT_EQ(e.path(), "");
+    EXPECT_EQ(e.line(), 1);
+    EXPECT_EQ(e.col(), 10);
+    EXPECT_EQ(e.message(), "Can't load file without path in context");
+  }
 }
 
 TEST(Loader, BinaryExternalErrorAbsolute) {
