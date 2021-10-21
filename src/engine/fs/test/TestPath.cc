@@ -93,7 +93,7 @@ TEST(Path, Extension) {
 }
 
 TEST(Path, Split) {
-  using string_pair = std::pair<std::string, std::string>;
+  using string_pair = std::pair<std::string_view, std::string_view>;
 
   EXPECT_EQ(freeisle::fs::path::split(""), string_pair(".", ""));
   EXPECT_EQ(freeisle::fs::path::split("."), string_pair(".", "."));

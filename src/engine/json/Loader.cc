@@ -33,7 +33,7 @@ make_context(std::vector<uint8_t> data, const char *path, fs::FileId file_id) {
     path = "";
     // not adding any search paths automatically disables all include resolution
   } else {
-    search_paths.push_back(fs::path::dirname(path));
+    search_paths.push_back(std::string(fs::path::dirname(path)));
   }
 
   SourceInfo source{

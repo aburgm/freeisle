@@ -27,14 +27,14 @@ TEST(String, HasSuffix) {
 }
 
 TEST(String, SplitEmptyStr) {
-  const std::vector<std::string> result =
+  const std::vector<std::string_view> result =
       freeisle::core::string::split("", "/");
   ASSERT_EQ(result.size(), 1);
   EXPECT_EQ(result[0], "");
 }
 
 TEST(String, SplitNormal) {
-  const std::vector<std::string> result =
+  const std::vector<std::string_view> result =
       freeisle::core::string::split("hi/there//and/then/some", "/");
   ASSERT_EQ(result.size(), 6);
   EXPECT_EQ(result[0], "hi");
@@ -46,7 +46,7 @@ TEST(String, SplitNormal) {
 }
 
 TEST(String, SplitMultiSep) {
-  const std::vector<std::string> result =
+  const std::vector<std::string_view> result =
       freeisle::core::string::split("hi/there//and/then/some", "//");
   ASSERT_EQ(result.size(), 2);
   EXPECT_EQ(result[0], "hi/there");
@@ -54,7 +54,7 @@ TEST(String, SplitMultiSep) {
 }
 
 TEST(String, SplitTripleSep) {
-  const std::vector<std::string> result =
+  const std::vector<std::string_view> result =
       freeisle::core::string::split("hi/there//and/then/some", "///");
   ASSERT_EQ(result.size(), 1);
   EXPECT_EQ(result[0], "hi/there//and/then/some");
